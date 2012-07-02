@@ -1,5 +1,8 @@
 (function($){
 
+
+	// Initial check to ensure the user's browser supports the HTML5 File API
+	// Currently, they are not alerted/redirected
 	if(window.File && window.FileReader){
 		console.log("We're Good");
 	}
@@ -7,9 +10,29 @@
 		console.log("Bucky McBuckington (That's not good!)");
 	}
 
-  Backbone.sync = function(method, model, success, error){ 
-    success();
-  }
+
+//Backbone.sync workaround
+Backbone.sync = function(method, model, success, error){ 
+	success();
+}
+
+	/* Backbone Model: File
+	*	Model used to store attributes of files being uploaded
+	*
+	* -Attributes:
+	*	@ file: Stores the HTML5 File object for the selected file
+	*	@ title: Display title
+	*	@ type: Mime type
+	*	@ size: Size in bytes
+	*	@ progress: Stores current position when uploading
+	* 	@ status: Status used to emulate a queue
+	*		- 0: Default (Not Tracked)
+	*		- 1: In Queue
+	*		- 2: Next in line for queue
+	*		- 3: Uploaded 
+	*	@ selector: Stores HTML data for the queue button/file upload box
+	*
+	*/
 
 	var File = Backbone.Model.extend({
 		defaults: {
@@ -23,9 +46,29 @@
 		}
 	});
 
+
+	/* Backbone Collection: Queue
+	*	Collection used to store all our files
+	*
+	* -Attributes
+	*	@ model: file
+	*		- Only model stored is our previously created file model
+	*
+	*/
+
 	var Queue = Backbone.Collection.extend({
 		model: File
 	});
+
+	/* Backbone View: FileView
+	*	Responsible for all fields related to each file row
+	*
+	*
+	*
+	*
+	*
+	*
+	*/
 
 	var FileView = Backbone.View.extend({
 		tagName: 'tr',
