@@ -3,7 +3,7 @@
 
 		<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
 		<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-		<script src="http://10.0.2.23:8080/socket.io/socket.io.js"></script>
+		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 
 		<style type="text/css">
 			body {

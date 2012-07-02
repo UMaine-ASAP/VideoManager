@@ -17,7 +17,7 @@
 			title: '',
 			type: '',
 			size: '',
-			progress: '50',
+			progress: '0',
 			selector: '<input type=\"file\" class=\"file\" name=\"files\">',
 		}
 	});
@@ -41,7 +41,14 @@
 		},
 
 		render: function() {
-			$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress progress-warning inactive\" style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + this.model.get('size') + ' MB</small></p></td>')
+			var progress_type;
+			if(this.model.get('progress') != '100'){
+				progress_type = "progress-striped";
+			}
+			else {
+				progress_type = "progress-success"
+			}
+			$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress ' + progress_type +'\" style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
 			return this;
 		},
 
@@ -57,7 +64,7 @@
 				title: file[0]['name'],
 				type: file[0]['type'],
 				size: filesize,
-				selector: '<a class=\"btn btn-success\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Queue</a>'
+				selector: '<a class=\"btn btn-primary\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Queue</a>'
 			}
 			this.model.set(changed);
 		},
@@ -74,24 +81,26 @@
 		},
 
 		upload: function() {
+			var el = this.el;
+			var model = this.model;
 
-			$(this.el).find(".progress").toggleClass('progress-warning progress-striped').toggleClass('inactive active').children("div").width("0%");
-			$(this.el).find("#queue").button('loading');
-
-			var socket = io.connect('http://10.0.2.23:8080');
+			var socket = io.connect('http://localhost:8080', {'force new connection': true});
 
 			var fileName = this.model.get('title');
 			var fileSize = this.model.get('size');
 
+			$(el).find("#queue").button('loading');
+
 			FReader = new FileReader();
 
 			FReader.onload = function(event){
+
 				socket.emit('Upload', {'Name' : fileName, Data: event.target.result });
 			}
 
 			socket.emit('Start', {'Name': fileName, 'Size': fileSize });
 
-			var model = this.model;
+
 
 			var SelectedFile = this.model.get('file');
 
@@ -100,6 +109,7 @@
 
 				var update = {
 					progress: data['Percent'],
+					selector: '<a class=\"btn btn-primary disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white \"></i>  Uploading!</a>',
 				}
 
 				model.set(update);
@@ -111,6 +121,20 @@
 				else
 					NewFile = SelectedFile.mozSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
 				FReader.readAsBinaryString(NewFile);
+			});
+
+			socket.on('Done', function (data) {
+
+				var update = {
+					progress: '100',
+					selector: '<a class=\"btn btn-success disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Done</a>'
+				}
+				model.set(update, {silent: true});
+				model.change("change:progress")
+
+
+				socket.disconnect();
+
 			});
 		}	
 
