@@ -4,7 +4,7 @@
 		console.log("We're Good");
 	}
 	else {
-		console.log("Bucky McBuckington");
+		console.log("Bucky McBuckington (That's not good!)");
 	}
 
   Backbone.sync = function(method, model, success, error){ 
@@ -18,6 +18,7 @@
 			type: '',
 			size: '',
 			progress: '0',
+			status: '0',
 			selector: '<input type=\"file\" class=\"file\" name=\"files\">',
 		}
 	});
@@ -30,12 +31,20 @@
 		tagName: 'tr',
 
 		events: {
-			'click a#queue': 'upload',
+			'click a#queue': 'queue',
 			'change input.file': 'fileSelect',
 		},
 
 		initialize: function() {
 			_.bindAll(this, 'render', 'fileSelect', 'queue', 'upload');
+
+			var that = this;
+
+			this.model.on('change:status', function(){
+				if(this.get('status') == 2){
+					that.upload();
+				}
+			});
 
 			this.model.bind('change', this.render);
 		},
@@ -75,37 +84,60 @@
 			$(this.el).find(".progress").toggleClass('progress-warning progress-striped').toggleClass('inactive active').children("div");
 			$(this.el).find("#queue").button('loading');
 
-			console.log(this.model.toJSON());
+			var changed = {
+				status: "1",
+			}
+			this.model.set(changed);
+
+
+			var queued = this.collection.where({status: "1"});
+
+			console.log(this);
+			if(queued.length == 1){
+				this.upload();
+			}
+
+			console.log(queued.length);
 
 			//console.log(this.el);
 		},
 
 		upload: function() {
+
+			/*
+			 *  Write a nice description here
+			 *
+			 */
+
+			// Static definitions for common elements because I can't pass this to the socket functions
 			var el = this.el;
 			var model = this.model;
+			var collection = this.collection;
 
+			// Initialize a new socket with the node app.
+			// Force new connection required to support asyncronous connections in the future
 			var socket = io.connect('http://localhost:8080', {'force new connection': true});
 
+			// Static definitions before I added the definitions at the top (Rework)
 			var fileName = this.model.get('title');
 			var fileSize = this.model.get('size');
 
-			$(el).find("#queue").button('loading');
-
+			// Initialize the HTML5 File Reader
 			FReader = new FileReader();
 
+			// Initialize the connection to the node app (ToDo: Explain Better)
 			FReader.onload = function(event){
 
 				socket.emit('Upload', {'Name' : fileName, Data: event.target.result });
 			}
-
 			socket.emit('Start', {'Name': fileName, 'Size': fileSize });
 
-
-
+			// Once again, static definition I should rework
 			var SelectedFile = this.model.get('file');
 
+
+
 			socket.on('MoreData', function (data){
-				//UpdateBar(data['Percent']);
 
 				var update = {
 					progress: data['Percent'],
@@ -114,8 +146,13 @@
 
 				model.set(update);
 
+
+				// ToDo: Experiment with larger chunk sizes
+
 				var Place = data['Place'] * 524288; //The Next Blocks Starting Position
 				var NewFile; //The Variable that will hold the new Block of Data
+				
+				// Webkit/Firefox Specific upload commands...
 				if(SelectedFile.webkitSlice) 
 					NewFile = SelectedFile.webkitSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
 				else
@@ -123,17 +160,28 @@
 				FReader.readAsBinaryString(NewFile);
 			});
 
+
+
 			socket.on('Done', function (data) {
+
+				socket.disconnect();
 
 				var update = {
 					progress: '100',
-					selector: '<a class=\"btn btn-success disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Done</a>'
+					selector: '<a class=\"btn btn-success disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Done</a>',
+					status: '3',
 				}
-				model.set(update, {silent: true});
-				model.change("change:progress")
+				model.set(update);
 
 
-				socket.disconnect();
+				var nextUpload = collection.where({status: "1"});
+
+
+				var changeStatus = {
+					status: '2'
+				}
+				nextUpload[0].set(changeStatus);
+
 
 			});
 		}	
