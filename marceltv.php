@@ -3,6 +3,8 @@
 
 		<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
 		<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<script src="http://10.0.2.23:8080/socket.io/socket.io.js"></script>
+
 		<style type="text/css">
 			body {
 				padding-top: 60px;
@@ -83,6 +85,7 @@
 			</div>
 		</div>
 
+<!--Scripts that are dependent on the DOM-->
 	<script src="js/jquery.js"></script>
 	<script src="js/underscore.js"></script>
 	<script src="js/backbone.js"></script>
