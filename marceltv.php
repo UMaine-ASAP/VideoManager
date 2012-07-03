@@ -59,29 +59,6 @@
 				<h1>Upload Files:</h1>
 			</div>
 			<div class="well" id="upload_list">
-			<!--<table class="table">
-				<thead><td>File:</td><td>File Info</td><td>Status</td><td></td></thead>
-				<tr>
-					<td><input type="file"></td>
-					<td>
-						Title: <input type="text" id="title">
-						<p><small>Type: video/mpeg</small></p>
-					</td>
-					<td>
-						<div class="progress progress-striped active" style="width: 200px; margin-bottom: 8px;">
-							<div class="bar" style="width: 49%"></div>
-						</div>
-						<p><small>200000 MB</small></p>
-
-					</td>
-					<td>
-						<a class="btn btn-success" id="queue" href="#" style="float: right;">
-							<i class="icon-upload icon-white"></i>  Queue
-						</a>
-					</td>
-
-				</tr>
-			</table>-->
 			</div>
 		</div>
 
@@ -89,7 +66,7 @@
 	<script src="js/jquery.js"></script>
 	<script src="js/underscore.js"></script>
 	<script src="js/backbone.js"></script>
-	<script src="bootstrap/js/upload.js"></script>
+	<script src="js/upload.js"></script>
 	<script src="bootstrap/js/bootstrap.js"></script>
 
 	</body>
