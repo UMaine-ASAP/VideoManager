@@ -3,9 +3,29 @@ var app = require('http').createServer(handler)
   , fs = require('fs')
   , exec = require('child_process').exec
   , util = require('util')
-  , Files = {};
+  , Files = {}
+  , mysql = require('mysql');
 
+
+//Setup all of our connections
 app.listen(8080);
+
+var database = mysql.createConnection({
+	host : 'localhost',
+	user: 'upload',
+	password: 'testing',
+	database: 'upload',
+});
+
+database.connect(function(err) {
+	if(err){
+		console.log(err);
+	}
+	else {
+		console.log("Database Connection: Success");
+	}
+});
+
 
 function handler (req, res) {
   fs.readFile(__dirname + '/index.html',
@@ -60,6 +80,17 @@ io.sockets.on('connection', function (socket) {
 					var inp = fs.createReadStream("Temp/" + Name);
 					var out = fs.createWriteStream("Video/" + Name);
 					util.pump(inp, out, function(){
+
+						var sql = "INSERT INTO upload (name, size) VALUES (?, ?)";
+						database.query(sql, [Name, Files[Name]['FileSize']], function(err, results){
+							if(err){
+								console.log(err);
+							}
+							else {
+								console.log(results);
+							}
+						});
+
 						fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
 							exec("ffmpeg -i Video/" + Name  + " -ss 01:30 -r 1 -an -vframes 1 -f mjpeg Video/" + Name  + ".jpg", function(err){
 								socket.emit('Done', {'Image' : 'Video/' + Name + '.jpg'});
