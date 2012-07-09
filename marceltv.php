@@ -33,7 +33,7 @@
 				<div class="btn-group pull-right">
 					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 						<i class="icon-user"></i>
-						Don Foresta
+						
 						<span class="caret"></span>
 					</a>
 

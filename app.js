@@ -12,7 +12,7 @@ app.listen(8080);
 
 var database = mysql.createConnection({
 	host : 'localhost',
-	user: 'upload',
+	user: 'upload1',
 	password: 'testing',
 	database: 'upload',
 });
