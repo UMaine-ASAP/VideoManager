@@ -194,6 +194,7 @@ Backbone.sync = function(method, model, success, error){
 			// Static definitions before I added the definitions at the top (Rework)
 			var fileName = this.model.get('title');
 			var fileSize = this.model.get('size');
+			var fileType = this.model.get('type');
 
 			// Initialize the HTML5 File Reader
 			FReader = new FileReader();
@@ -203,7 +204,7 @@ Backbone.sync = function(method, model, success, error){
 
 				socket.emit('Upload', {'Name' : fileName, Data: event.target.result });
 			}
-			socket.emit('Start', {'Name': fileName, 'Size': fileSize });
+			socket.emit('Start', {'Name': fileName, 'Size': fileSize, 'Type': fileType });
 
 			// Once again, static definition I should rework
 			var SelectedFile = this.model.get('file');
@@ -223,14 +224,14 @@ Backbone.sync = function(method, model, success, error){
 
 				// ToDo: Experiment with larger chunk sizes
 
-				var Place = data['Place'] * 524288; //The Next Blocks Starting Position
+				var Place = data['Place'] * 10485760; //The Next Blocks Starting Position
 				var NewFile; //The Variable that will hold the new Block of Data
 				
 				// Webkit/Firefox Specific upload commands...
 				if(SelectedFile.webkitSlice) 
-					NewFile = SelectedFile.webkitSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+					NewFile = SelectedFile.webkitSlice(Place, Place + Math.min(10485760, (SelectedFile.size-Place)));
 				else
-					NewFile = SelectedFile.mozSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+					NewFile = SelectedFile.mozSlice(Place, Place + Math.min(10485760, (SelectedFile.size-Place)));
 				FReader.readAsBinaryString(NewFile);
 			});
 
