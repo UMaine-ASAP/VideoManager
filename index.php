@@ -1,3 +1,25 @@
+<?PHP
+session_start();
+
+require_once('libraries/authentication.php');
+
+if (!AuthenticationController::checkLogin())
+{
+	echo "<pre>";
+	print_r($_SESSION);
+	echo "</pre>";
+?>
+<form method="post" action="login.php">
+	<label for="username">Username: </label><input type="text" name="username"><br>
+	<label for="password">Password: </label><input type="password" name="password"><br>
+	<input type="submit" value="Hamburger Time">
+
+</form>
+
+<?PHP
+}
+else {
+?>
 <html>
 	<head>
 
@@ -71,3 +93,6 @@
 
 	</body>
 </html>
+<?PHP
+}
+?>
