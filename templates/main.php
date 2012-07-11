@@ -1,10 +1,10 @@
 	<html>
 	
-	<? include('templates/header.php'); ?>
+	<? require_once('templates/header.php'); ?>
 
 	<body>
 
-	<? include('templates/navbar.php'); ?>
+	<? require_once('templates/navbar.php'); ?>
 
 	<div class="container" style="height: 100%;">
 		<div class="page-header">

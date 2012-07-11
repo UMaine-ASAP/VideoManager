@@ -6,4 +6,6 @@ $DATABASE = "blackbox";
 $USERNAME = "blackbox";
 $PASSWORD = "";
 
+
+$web_root = "/experiments"
 ?>

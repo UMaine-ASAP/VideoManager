@@ -23,7 +23,7 @@
 					<ul class="dropdown-menu">
 						<li><a href="#">My Videos</a></li>
 						<li class="divider"></li>
-						<li><a href="#">Sign Out</a></li>
+						<li><a href="logout">Sign Out</a></li>
 					</ul>
 
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">

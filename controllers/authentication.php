@@ -36,10 +36,6 @@ class AuthenticationController
      */
     static function checkLogin()
     {
-    	echo "<pre>";
-    	print_r($_SESSION);
-    	echo "</pre>";
-    	
         if (isset($_SESSION['UserID']))
         {
             $latestAccess = time();
