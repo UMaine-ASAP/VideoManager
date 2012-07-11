@@ -1,6 +1,6 @@
 <?PHP
 session_start();
-require_once('libraries/authentication.php');
+require_once('controllers/authentication.php');
 
 AuthenticationController::attemptLogin($_POST['username'], $_POST['password']);
 

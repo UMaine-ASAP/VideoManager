@@ -1,7 +1,7 @@
 <?php
 
-require_once('phpass-0.3/PasswordHash.php');
-require_once('settings.php');
+require_once('libraries/phpass-0.3/PasswordHash.php');
+require_once('libraries/settings.php');
 
 /**
  * Controller handling all matters auth
@@ -97,7 +97,7 @@ class AuthenticationController
         //try to find a user with that username
         try 
         {
-        	$dbh = new PDO("mysql:host=localhost;dbname=blackbox", 'blackbox', '');
+        	$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
         	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         	$data = array("username" => $login_username);
 
@@ -198,7 +198,7 @@ class AuthenticationController
         {
         	try
         	{
-	        	$dbh = new PDO("mysql:host=$HOST;dbname=$DATABASE", $USERNAME, $PASSWORD);
+                $dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
 
 	        	$data = array("user_id" => $userID, "password" => $hash);
 

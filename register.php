@@ -1,6 +1,6 @@
 <?PHP
 
-require_once('libraries/authentication.php');
+require_once('controllers/authentication.php');
 
 if($_POST){
 	if($hash = AuthenticationController::createHash($_POST['password'])){
