@@ -97,14 +97,14 @@ class AuthenticationController
         	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         	$data = array("username" => $login_username);
 
-
-        	$dbh->beginTransaction();
         	$statement = $dbh->prepare("SELECT * FROM users WHERE username = :username");
         	$statement->execute($data);
-        	error_log($dbh->commit());
-
 
         	$row = $statement->fetch(PDO::FETCH_OBJ);
+
+            if(!is_object($row)){
+                return false;
+            }
 
 		}
 		catch(PDOException $ex)

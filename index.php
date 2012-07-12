@@ -2,6 +2,7 @@
 session_start();
 
 require_once('controllers/authentication.php');
+require_once('controllers/users.php');
 
 require_once('libraries/helpers.php');
 require_once('libraries/Slim/Slim.php');
@@ -13,7 +14,7 @@ $app->get('/', function() use ($app) {
 		return redirect('/login');
 	}
 	else{
-		include('templates/main.php');
+		include('templates/upload.php');
 	}
 });
 
@@ -28,7 +29,7 @@ $app->get('/login', function() {
 });
 
 $app->post('/login', function() use ($app){
-	if (isset($_POST['username']) && isset($_POST['password']) &&
+	if ($_POST['username'] != "" && $_POST['password'] != "" &&
 		AuthenticationController::attemptLogin($_POST['username'], $_POST['password']))
 	{	// Success!
 		return redirect('/');
@@ -38,6 +39,40 @@ $app->post('/login', function() use ($app){
 		$app->flash('error', 'Username or password was incorrect.');
 		return redirect('/login');
 	}
+});
+
+$app->post('/register', function() use ($app){
+	if($_POST['username'] == "" || $_POST['password'] == "" || $_POST['email'] == "" || $_POST['first_name'] == "" || $_POST['last_name'] == "")
+	{
+		$app->flash('error', 'All fields are required.');
+		return redirect('/login');
+	}
+	else
+	{
+		if($hash = AuthenticationController::createHash($_POST['password']))
+		{
+			try 
+		    {
+        		$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
+		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		    	$data = array('username' => $_POST['username'], 'password' => $hash, 'email' => $_POST['email'], 'first' => $_POST['first_name'], 'last' => $_POST['last_name']);
+
+		    	$statement = $dbh->prepare("INSERT INTO users (username, password, first, last, email) VALUES (:username, :password, :first, :last, :email)");
+		    	$statement->execute($data);
+			}
+			catch(PDOException $ex)
+			{
+				error_log($ex);
+				$dbh = null;
+				return false;
+			}
+
+			$dbh = null;
+
+			return redirect('/');
+		}
+	}
+
 });
 
 
