@@ -15,7 +15,7 @@
 	</div>
 
 <!--Scripts that are dependent on the DOM-->
-	<script src="js/jquery.js"></script>
+
 	<script src="js/underscore.js"></script>
 	<script src="js/backbone.js"></script>
 	<script src="js/upload.js"></script>

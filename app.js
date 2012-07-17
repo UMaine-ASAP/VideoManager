@@ -13,8 +13,8 @@ app.listen(8080);
 
 var database = mysql.createConnection({
 	host : 'localhost',
-	user: 'upload',
-	password: 'testing',
+	user: 'blackbox',
+	password: '',
 	database: 'blackbox',
 });
 
@@ -43,33 +43,41 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
   	socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
 			var Name = data['Name'];
-			Files[Name] = {  //Create a new Entry in The Files Variable
-				FileSize : data['Size'],
-				FileType : data['Type'],
-				Data	 : "",
-				Downloaded : 0
-			}
-			var Place = 0;
-			try{
-				var Stat = fs.statSync('Temp/' +  Name);
-				if(Stat.isFile())
-				{
-					Files[Name]['Downloaded'] = Stat.size;
-					Place = Stat.size / 10485760;
+
+			var type = data['Type'].split('/');
+
+			//if(type[0] == "video"){
+				Files[Name] = {  //Create a new Entry in The Files Variable
+					FileSize : data['Size'],
+					FileType : data['Type'],
+					Data	 : "",
+					Downloaded : 0
 				}
-			}
-	  		catch(er){} //It's a New File
-			fs.open("Temp/" + Name, 'a', 0755, function(err, fd){
-				if(err)
-				{
-					console.log(err);
+				var Place = 0;
+				try{
+					var Stat = fs.statSync('Temp/' +  Name);
+					if(Stat.isFile())
+					{
+						Files[Name]['Downloaded'] = Stat.size;
+						Place = Stat.size / 10485760;
+					}
 				}
-				else
-				{
-					Files[Name]['Handler'] = fd; //We store the file handler so we can write to it later
-					socket.emit('MoreData', { 'Place' : Place, Percent : 0 });
-				}
-			});
+		  		catch(er){} //It's a New File
+				fs.open("Temp/" + Name, 'a', 0755, function(err, fd){
+					if(err)
+					{
+						console.log(err);
+					}
+					else
+					{
+						Files[Name]['Handler'] = fd; //We store the file handler so we can write to it later
+						socket.emit('MoreData', { 'Place' : Place, Percent : 0 });
+					}
+				});
+			//}
+			//else {
+			//	socket.emit('Error', {'Message' : 'Selected file is not a video'});
+			//}
 	});
 	
 	socket.on('Upload', function (data){

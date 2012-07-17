@@ -4,3 +4,8 @@
 
 .video_data {
 }
+
+#description {
+    width: 350px;
+    height: 100px;	
+}

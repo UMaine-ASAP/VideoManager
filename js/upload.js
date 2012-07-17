@@ -10,12 +10,6 @@
 		console.log("Bucky McBuckington (That's not good!)");
 	}
 
-
-//Backbone.sync workaround
-Backbone.sync = function(method, model, success, error){ 
-	success();
-}
-
 	/* Backbone Model: File
 	*	Model used to store attributes of files being uploaded
 	*
@@ -38,11 +32,17 @@ Backbone.sync = function(method, model, success, error){
 		defaults: {
 			file: '',
 			title: '',
+			description: '',
+			category: '',
+			visability: '',
 			type: '',
 			size: '',
 			progress: '0',
 			status: '0',
 			selector: '<input type=\"file\" class=\"file\" name=\"files\">',
+		},
+		url: function() {
+			return 'sync';
 		}
 	});
 
@@ -80,7 +80,7 @@ Backbone.sync = function(method, model, success, error){
 
 		// Special binds for events to functions
 		events: {
-			'click a#queue': 'queue',
+			'click #queue': 'queue',
 			'change input.file': 'fileSelect',
 		},
 
@@ -113,18 +113,20 @@ Backbone.sync = function(method, model, success, error){
 		 *
 		 */
 		render: function() {
-
-			//Not entirely happy with this.  Workaround to avoid crazy refreshes on the progress bar from status updates
-			var progress_type;
-			if(this.model.get('progress') != '100'){
-				progress_type = "progress-striped";
-			}
-			else {
-				progress_type = "progress-success"
-			}
-
+			var that = this;
 			//The contents of the FileView <tr> element.  Note: This must be a single line, you get a parse error otherwise.
-			$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress ' + progress_type +'\" style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
+			if(this.model.get('status') == "2"){
+				$(this.el).html('<td colspan=\"3\"><p>'+ this.model.get('title') + '<div class=\"progress\" style=\"width: 80%; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div>')
+			}
+			else if(this.model.get('status') == "3")
+			{
+				$(this.el).html('<td colspan=\"3\"><p>'+ this.model.get('title') + '<div class=\"progress progress-success\" style=\"width: 80%; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div>')
+			}
+			else
+			{
+				$(this.el).html('<td><p>Select a file to upload:</p><input type=\"file\" class=\"file\" name=\"files\"></td><td></td><td></td>');
+			}
+			
 			return this;
 		},
 
@@ -146,7 +148,26 @@ Backbone.sync = function(method, model, success, error){
 				size: file[0]['size'],
 				selector: '<a class=\"btn btn-primary\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Queue</a>'
 			}
-			this.model.set(changed);
+			this.model.set(changed, {silent: true});
+
+			//$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
+			$(this.el).html('<td><p>Title:</p><input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p>Category:</p> <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success\">Queue</button></td>');
+			$(this.el).find("#visability").button();
+			$(this.el).find("#category").select2({
+				multiple: true,
+				query: function (query) {
+					var data = {results: []}, i, j, s;
+					if(query.term != ''){
+	                	for (i = 1; i < 5; i++) {
+	                    	s = "";
+	                    	for (j = 0; j < i; j++) {s = s + query.term;}
+	                    	data.results.push({id: query.term + i, text: s});
+	                	}
+	                }
+                query.callback(data);
+
+				}
+			});
 		},
 
 		/**
@@ -163,11 +184,11 @@ Backbone.sync = function(method, model, success, error){
 			}
 			this.model.set(changed);
 
-
 			var queued = this.collection.where({status: "1"});
 
 			console.log(this);
 			if(queued.length == 1){
+				this.model.set({status: "2"});
 				this.upload();
 			}
 
@@ -263,6 +284,26 @@ Backbone.sync = function(method, model, success, error){
 				nextUpload[0].set(changeStatus);
 				// So instead we set its status to 2, triggering the on change event defined earlier in the View.
 			});
+
+			socket.on('Error', function (data){
+				socket.disconnect();
+
+				var update = {
+					progress: '0',
+					selector: '<a class=\"btn btn-danger disabled\" id=\"queue\"><i class=\"icon-upload icon-white\"></i> Error</a>',
+					status: '4',
+				}
+				model.set(update);
+
+				var nextUpload = collection.where({status: "1"});
+				// This returns a model, not a view, meaning we can't directly call upload on it.
+
+				var changeStatus = {
+					status: '2'
+				}
+				nextUpload[0].set(changeStatus);
+				// So instead we set its status to 2, triggering the on change event defined earlier in the View.
+			});
 		}	
 	});
 
@@ -298,7 +339,7 @@ Backbone.sync = function(method, model, success, error){
 			var self = this;
 
 			$(this.el).append("<a class=\"btn pull-right\" href=\"#\" id=\"add_item\"><i class=\"icon-plus\"></i> Add Another</a>");
-			$(this.el).append("<table class=\"table\"><thead><tr><td width=\"25%\"></td><td width=\"40%\">File Info</td><td width=\"35%\">Status</td></tr></thead></table>");
+			$(this.el).append("<table class=\"table\"><thead><tr><td width=\"30%\"></td><td width=\"45%\"></td><td width=\"25%\"></td></tr></thead></table>");
 		},
 
 		addFile: function(){
