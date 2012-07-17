@@ -1,7 +1,8 @@
 <?PHP
 
-require_once('authentication.php');
 require_once('libraries/settings.php');
+require_once('authentication.php');
+
 
 
 class UserController

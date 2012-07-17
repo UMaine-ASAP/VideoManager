@@ -75,6 +75,10 @@ $app->post('/register', function() use ($app){
 
 });
 
+$app->get('/videos', function() use ($app) {
+	include('templates/videos.php');
+});
+
 
 $app->run();
 
