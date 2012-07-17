@@ -43,13 +43,15 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
   	socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
 			var Name = data['Name'];
-
 			var type = data['Type'].split('/');
+
+			var now = new Date();
 
 			//if(type[0] == "video"){
 				Files[Name] = {  //Create a new Entry in The Files Variable
 					FileSize : data['Size'],
 					FileType : data['Type'],
+					FileID   : Math.floor(Math.random()*10) + parseInt(now.getTime()).toString(36),  //TODO: Is this too much extra load?
 					Data	 : "",
 					Downloaded : 0
 				}
@@ -87,7 +89,7 @@ io.sockets.on('connection', function (socket) {
 			Files[Name]['Data'] += data['Data'];
 
 			if(Files[Name]['Downloaded'] == Files[Name]['FileSize']) //If File is Fully Uploaded
-			{
+			{	//TODO: Files array is never cleaned out. Check for memory leak.
 				fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
 					
 
@@ -107,8 +109,8 @@ io.sockets.on('connection', function (socket) {
 					var out = fs.createWriteStream("Video/" + Name);
 					util.pump(inp, out, function(){
 
-						var sql = "INSERT INTO uploads (title, mime_type, filesize, md5) VALUES (?, ?, ?, ?)";
-						database.query(sql, [Name, Files[Name]['FileType'], Files[Name]['FileSize'], Files[Name]["FileMD5"]], function(err, results){
+						var sql = "INSERT INTO uploads (video_id, title, mime_type, filesize, md5) VALUES (?, ?, ?, ?, ?)";
+						database.query(sql, [Files[Name]['FileID'], Name, Files[Name]['FileType'], Files[Name]['FileSize'], Files[Name]["FileMD5"]], function(err, results){
 							if(err){
 								console.log(err);
 							}
@@ -121,7 +123,7 @@ io.sockets.on('connection', function (socket) {
 
 						fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
 							exec("ffmpeg -i Video/" + Name  + " -ss 01:30 -r 1 -an -vframes 1 -f mjpeg Video/" + Name  + ".jpg", function(err){
-								socket.emit('Done', {'Image' : 'Video/' + Name + '.jpg'});
+								socket.emit('Done', {'Image' : 'Video/' + Name + '.jpg', 'id': Files[Name]["FileID"]});
 							});
 						});
 					});

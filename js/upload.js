@@ -178,6 +178,7 @@
 
 
 			var changed = {
+				description: $(this.el).find("textarea").val(),
 				status: "1",
 			}
 			this.model.set(changed);
@@ -266,6 +267,7 @@
 					status: '3',
 				}
 				model.set(update);
+				model.save();
 
 
 
