@@ -39,7 +39,6 @@
 			size: '',
 			progress: '0',
 			status: '0',
-			selector: '<input type=\"file\" class=\"file\" name=\"files\">',
 		},
 		url: function() {
 			return 'sync';
@@ -146,7 +145,6 @@
 				title: file[0]['name'],
 				type: file[0]['type'],
 				size: file[0]['size'],
-				selector: '<a class=\"btn btn-primary\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Queue</a>'
 			}
 			this.model.set(changed, {silent: true});
 
@@ -237,7 +235,6 @@
 
 				var update = {
 					progress: data['Percent'],
-					selector: '<a class=\"btn btn-primary disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white \"></i>  Uploading!</a>',
 				}
 
 				model.set(update);
@@ -266,10 +263,10 @@
 
 				var update = {
 					progress: '100',
-					selector: '<a class=\"btn btn-success disabled\" data-loading-text=\"Queued!\" id=\"queue\" ><i class=\"icon-upload icon-white\"></i>  Done</a>',
 					status: '3',
 				}
 				model.set(update);
+
 
 
 				// Emulate a queue by uploading the next file with a status of 1 (queued).
@@ -290,7 +287,6 @@
 
 				var update = {
 					progress: '0',
-					selector: '<a class=\"btn btn-danger disabled\" id=\"queue\"><i class=\"icon-upload icon-white\"></i> Error</a>',
 					status: '4',
 				}
 				model.set(update);
