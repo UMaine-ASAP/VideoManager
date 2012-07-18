@@ -123,7 +123,7 @@
 			}
 			else
 			{
-				$(this.el).html('<td><p>Select a file to upload:</p><input type=\"file\" class=\"file\" name=\"files\"></td><td></td><td></td>');
+				$(this.el).html('<td>Select a file to upload <input type=\"file\" class=\"file\" name=\"files\"></td><td></td><td></td>');
 			}
 			
 			return this;
@@ -148,9 +148,20 @@
 			}
 			this.model.set(changed, {silent: true});
 
+
+			var string = '<td><h4>' + this.model.get('title') + '</h4><br>';
+			string += '<form class="form-horizontal"><div class="control-group"><label class="control-label" for="title">Change Title</label><div class="controls"><input type="text" class="input-xlarge" id="title" value="'+this.model.get('title')+'"></div></div>';
+			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description"></textarea></div></div></form>';
+			string += '</td><td style="position: relative;">';
+			string += '<button style="position: absolute; top: 10px; right: 8px;" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
+			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visability" class="btn-group" data-toggle="buttons-radio"><button id="public" class="btn active">Public</button><button class="btn" id="private">Private</button></div></div></div>';
+			string += '<div class="control-group"><label class="control-label" for="category">Categories</label><div class="controls"><input type=\"hidden\" id=\"category\"></input></div></div></form></td></table>';
 			//$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
-			$(this.el).html('<td><p>Title:</p><input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p>Category:</p> <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success\">Queue</button></td>');
+			//$(this.el).html('<td>Title  <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><br>Category <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success btn-large\">Queue</button></td>');
+			//$(this.el).html('<td><h4>'+ this.model.get('title') +'</h4><form class="form-horizontal><div class="control-group"><label class="control-label">')
+			$(this.el).html(string);
 			$(this.el).find("#visability").button();
+
 			$(this.el).find("#category").select2({
 				multiple: true,
 				query: function (query) {
@@ -337,7 +348,7 @@
 			var self = this;
 
 			$(this.el).append("<a class=\"btn pull-right\" href=\"#\" id=\"add_item\"><i class=\"icon-plus\"></i> Add Another</a>");
-			$(this.el).append("<table class=\"table\"><thead><tr><td width=\"30%\"></td><td width=\"45%\"></td><td width=\"25%\"></td></tr></thead></table>");
+			$(this.el).append("<table class=\"table\"><thead><tr><td width=\"40%\"></td><td width=\"60%\"></td></tr></thead></table>");
 		},
 
 		addFile: function(){
@@ -352,7 +363,7 @@
 				model: file,
 				collection: this.collection
 			});
-			$(table).last().append(fileView.render().el);
+			$(table).last().prepend(fileView.render().el);
 		}
 
 	});
