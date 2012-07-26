@@ -97,7 +97,7 @@ class AuthenticationController
         	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         	$data = array("username" => $login_username);
 
-        	$statement = $dbh->prepare("SELECT * FROM users WHERE username = :username");
+        	$statement = $dbh->prepare("SELECT * FROM AUTH_Users WHERE username = :username");
         	$statement->execute($data);
 
         	$row = $statement->fetch(PDO::FETCH_OBJ);
@@ -198,7 +198,7 @@ class AuthenticationController
 
 	        	$data = array("user_id" => $userID, "password" => $hash);
 
-	        	$statment = "UPDATE users SET password = :password WHERE user_id = :user_id";
+	        	$statment = "UPDATE AUTH_Users SET password = :password WHERE user_id = :user_id";
 	        	$statment->execute($data);
 	        }
 	        catch(PDOException $ex)

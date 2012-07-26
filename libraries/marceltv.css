@@ -1,11 +1,6 @@
-.video_thumb {
-	width: 300px;
+.description {
+	font-size: .8em;
 }
-
-.video_data {
-}
-
-#description {
-    width: 350px;
-    height: 100px;	
+#video_table tbody tr td {
+	margin-top: 30px;
 }

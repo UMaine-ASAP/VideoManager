@@ -15,7 +15,7 @@ class UserController
         	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         	$data = array("user_id" => $user_id);
 
-        	$statement = $dbh->prepare("SELECT * FROM users WHERE user_id = :user_id");
+        	$statement = $dbh->prepare("SELECT * FROM AUTH_Users WHERE user_id = :user_id");
         	$statement->execute($data);
 
         	return $statement->fetch(PDO::FETCH_ASSOC);

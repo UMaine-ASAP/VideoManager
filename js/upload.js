@@ -34,7 +34,7 @@
 			title: '',
 			description: '',
 			category: '',
-			visability: '',
+			visibility: '',
 			type: '',
 			size: '',
 			progress: '0',
@@ -81,6 +81,7 @@
 		events: {
 			'click #queue': 'queue',
 			'change input.file': 'fileSelect',
+			'click #remove': 'unrender',
 		},
 
 
@@ -105,6 +106,7 @@
 			});
 
 			this.model.bind('change', this.render);
+			this.model.bind('remove', this.unrender);
 		},
 
 		/**
@@ -112,7 +114,9 @@
 		 *
 		 */
 		render: function() {
-			var that = this;
+			if(this.collection.length %2 != 0){
+				$(this.el).addClass("striped");
+			}
 			//The contents of the FileView <tr> element.  Note: This must be a single line, you get a parse error otherwise.
 			if(this.model.get('status') == "2"){
 				$(this.el).html('<td colspan=\"3\"><p>'+ this.model.get('title') + '<div class=\"progress\" style=\"width: 80%; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div>')
@@ -123,10 +127,16 @@
 			}
 			else
 			{
-				$(this.el).html('<td>Select a file to upload <input type=\"file\" class=\"file\" name=\"files\"></td><td></td><td></td>');
+				$(this.el).html('<td>Select a file to upload <input type=\"file\" class=\"file\" name=\"files\"></td><td></td>');
 			}
 			
 			return this;
+		},
+
+		unrender: function() {
+			$(this.el).remove();
+
+			
 		},
 
 		/**
@@ -149,33 +159,38 @@
 			this.model.set(changed, {silent: true});
 
 
-			var string = '<td><h4>' + this.model.get('title') + '</h4><br>';
+			var string = '<td style="width: 60%;"><h4>' + this.model.get('title') + '</h4><br>';
 			string += '<form class="form-horizontal"><div class="control-group"><label class="control-label" for="title">Change Title</label><div class="controls"><input type="text" class="input-xlarge" id="title" value="'+this.model.get('title')+'"></div></div>';
-			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description"></textarea></div></div></form>';
+			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description" style="width: 100%"></textarea></div></div></form>';
 			string += '</td><td style="position: relative;">';
-			string += '<button style="position: absolute; top: 10px; right: 8px;" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
-			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visability" class="btn-group" data-toggle="buttons-radio"><button id="public" class="btn active">Public</button><button class="btn" id="private">Private</button></div></div></div>';
-			string += '<div class="control-group"><label class="control-label" for="category">Categories</label><div class="controls"><input type=\"hidden\" id=\"category\"></input></div></div></form></td></table>';
+			string += '<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
+			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visibility" class="btn-group" data-toggle="buttons-radio" ><a id="public" data-content="Determines if Video will be visible on MarcelTV" class="btn active" value="0">Public</a><a class="btn" data-content="Determines if Video will be visible on MarcelTV" id="private" value="1">Private</a></div></div></div>';
+			string += '<div class="control-group"><label class="control-label" for="category">Category</label><div class="controls"><input type=\"hidden\" id=\"category\"></input></div></div></form></td></table>';
 			//$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
 			//$(this.el).html('<td>Title  <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><br>Category <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success btn-large\">Queue</button></td>');
 			//$(this.el).html('<td><h4>'+ this.model.get('title') +'</h4><form class="form-horizontal><div class="control-group"><label class="control-label">')
 			$(this.el).html(string);
-			$(this.el).find("#visability").button();
+			$(this.el).find("#visibility").button().children("a").popover();
 
 			$(this.el).find("#category").select2({
-				multiple: true,
-				query: function (query) {
-					var data = {results: []}, i, j, s;
-					if(query.term != ''){
-	                	for (i = 1; i < 5; i++) {
-	                    	s = "";
-	                    	for (j = 0; j < i; j++) {s = s + query.term;}
-	                    	data.results.push({id: query.term + i, text: s});
-	                	}
-	                }
-                query.callback(data);
-
-				}
+				multiple: false,
+				placeholder: {title: "Select a Category", id: ""},
+				minimumInputLength: 1,
+				ajax: {
+					url: "http://localhost/experiments/category_query.php",
+					dataType: 'json',
+					data: function (term, page) {
+						return {
+							q: term,
+							limit: 10,
+						};
+					},
+					results: function (data, page) {
+						return {results: data}
+					}
+				},
+				formatResult: format_category,
+				formatSelection: format_category,
 			});
 		},
 
@@ -190,17 +205,25 @@
 
 			var changed = {
 				description: $(this.el).find("textarea").val(),
+				visibility: $(this.el).find("#visibility").children('.active').val(),
 				status: "1",
 			}
-			this.model.set(changed);
+			this.model.save(changed, {
+				success: function(model, response){
+					console.log(model);
+				},
+				wait: true,
+			});
+
+			
 
 			var queued = this.collection.where({status: "1"});
 
-			console.log(this);
 			if(queued.length == 1){
 				this.model.set({status: "2"});
 				this.upload();
 			}
+			console.log(this.model.toJSON());
 
 		},
 
@@ -278,7 +301,6 @@
 					status: '3',
 				}
 				model.set(update);
-				model.save();
 
 
 
@@ -347,8 +369,8 @@
 		render: function() {
 			var self = this;
 
-			$(this.el).append("<a class=\"btn pull-right\" href=\"#\" id=\"add_item\"><i class=\"icon-plus\"></i> Add Another</a>");
-			$(this.el).append("<table class=\"table\"><thead><tr><td width=\"40%\"></td><td width=\"60%\"></td></tr></thead></table>");
+			$(this.el).append("<a class=\"btn btn-primary pull-right\" id=\"add_item\"><i class=\"icon-plus icon-white\"></i> Add Another</a>");
+			$(this.el).append("<table class=\"table table-striped\"><thead><tr><td width=\"40%\"></td><td width=\"60%\"></td></tr></thead></table>");
 		},
 
 		addFile: function(){

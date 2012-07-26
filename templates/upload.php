@@ -1,16 +1,26 @@
 	<html>
-	
+	<script>
+	function format_category(category){
+		if(category.category_id == '-1'){
+			return category.name + "  <span class=\"label label-warning\" style=\"display: inline;\">New</span>";
+		}
+		else {
+			return category.name;
+		}
+	}
+
+</script>
 	<? require_once('templates/header.php'); ?>
 
 	<body>
 
 	<? require_once('templates/navbar.php'); ?>
 
-	<div class="container" style="height: 100%;">
+	<div id="uploads_container" class="container" style="height: 100%;">
 		<div class="page-header">
 			<h1>Upload Files:</h1>
 		</div>
-		<div class="well" id="upload_list">
+		<div id="upload_list">
 		</div>
 	</div>
 

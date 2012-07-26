@@ -17,7 +17,7 @@ $userArray = UserController::getUserDetails(AuthenticationController::GetCurrent
 					<div class="nav-collapse collapse" style="height: 0px;">
 						<ul class="nav">
 							<li class="active"><a href="#">Home</a></li>
-							<li><a href="#">Browse</a></li>
+							<li><a href="upload">Upload</a></li>
 						</ul>
 					</div>
 

@@ -18,6 +18,15 @@ $app->get('/', function() use ($app) {
 	}
 });
 
+$app->get('/upload', function() use ($app) {
+	if(!AuthenticationController::checkLogin()){
+		return redirect('/login');
+	}
+	else {
+		include('templates/upload.php');
+	}
+});
+
 $app->get('/logout', function() use ($app) {
 	AuthenticationController::logout();
 	$app->flash('header', 'You have been successfully logged out.');
@@ -57,7 +66,7 @@ $app->post('/register', function() use ($app){
 		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		    	$data = array('username' => $_POST['username'], 'password' => $hash, 'email' => $_POST['email'], 'first' => $_POST['first_name'], 'last' => $_POST['last_name']);
 
-		    	$statement = $dbh->prepare("INSERT INTO users (username, password, first, last, email) VALUES (:username, :password, :first, :last, :email)");
+		    	$statement = $dbh->prepare("INSERT INTO AUTH_Users (username, password, first, last, email) VALUES (:username, :password, :first, :last, :email)");
 		    	$statement->execute($data);
 			}
 			catch(PDOException $ex)
@@ -73,6 +82,11 @@ $app->post('/register', function() use ($app){
 		}
 	}
 
+});
+
+$app->post('/sync', function() use ($app) {
+	$response['id'] = '25';
+	echo json_encode($response);
 });
 
 $app->get('/videos', function() use ($app) {
