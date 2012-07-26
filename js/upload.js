@@ -208,23 +208,22 @@
 				visibility: $(this.el).find("#visibility").children('.active').val(),
 				status: "1",
 			}
+
+			var that = this;
+
 			this.model.save(changed, {
 				success: function(model, response){
-					console.log(model);
+					var queued = that.collection.where({status: "1"});
+
+					model.set({id: response['id']});
+
+					if(queued.length == 1){
+						model.set({status: "2"});
+						that.upload();
+					}
+
 				},
-				wait: true,
 			});
-
-			
-
-			var queued = this.collection.where({status: "1"});
-
-			if(queued.length == 1){
-				this.model.set({status: "2"});
-				this.upload();
-			}
-			console.log(this.model.toJSON());
-
 		},
 
 
