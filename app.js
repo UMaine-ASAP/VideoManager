@@ -43,15 +43,13 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
   	socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
 			var Name = data['Name'];
-			var type = data['Type'].split('/');
 
 			var now = new Date();
 
 			//if(type[0] == "video"){
 				Files[Name] = {  //Create a new Entry in The Files Variable
 					FileSize : data['Size'],
-					FileType : data['Type'],
-					FileID   : Math.floor(Math.random()*10) + parseInt(now.getTime()).toString(36),  //TODO: Is this too much extra load?
+					FileID : data['id'],
 					Data	 : "",
 					Downloaded : 0
 				}
@@ -109,8 +107,8 @@ io.sockets.on('connection', function (socket) {
 					var out = fs.createWriteStream("Video/" + Name);
 					util.pump(inp, out, function(){
 
-						var sql = "INSERT INTO uploads (video_id, title, mime_type, filesize, md5) VALUES (?, ?, ?, ?, ?)";
-						database.query(sql, [Files[Name]['FileID'], Name, Files[Name]['FileType'], Files[Name]['FileSize'], Files[Name]["FileMD5"]], function(err, results){
+						var sql = "UPDATE VIDEO_Upload_data SET md5 = ? WHERE video_id = ?";
+						database.query(sql, [Files[Name]['FileMD5'], Files[Name]['FileID']], function(err, results){
 							if(err){
 								console.log(err);
 							}
