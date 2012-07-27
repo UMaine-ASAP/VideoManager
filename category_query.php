@@ -7,7 +7,7 @@ require_once('libraries/settings.php');
 		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		    	$data = array('query_string' => $_GET['q'] . '%');
 
-		    	$statement = $dbh->prepare("SELECT * FROM META_Category WHERE name LIKE :query_string LIMIT 10");
+		    	$statement = $dbh->prepare("SELECT category_id as id, name as 'text' FROM META_Category WHERE name LIKE :query_string LIMIT 10");
 		    	$statement->execute($data);
 
 		    	$row = $statement->fetchAll();
@@ -30,8 +30,9 @@ foreach($row as $value){
 		exit;
 	}
 }
-	$queryArray['category_id'] = '-1';
-	$queryArray['name'] = $_GET['q'];
+	$queryArray['id'][0] = '-1';
+	$queryArray['id'][1] = $_GET['q'];
+	$queryArray['text'] = $_GET['q'];
 
 	array_unshift($row, $queryArray);
 

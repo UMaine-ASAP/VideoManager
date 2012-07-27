@@ -99,10 +99,40 @@ $app->post('/sync', function() use ($app) {
 			{
 				$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
 		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		    	$data = array('unique_id' => substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size);
+		    	$input = array('unique_id' => substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size, 'visibility' => $data->visibility);
 
-		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, mime_type, filesize) VALUES (:unique_id, :user_id, :title, :description, :mime_type, :filesize)");
-		    	$statement->execute($data);
+		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, visibility, mime_type, filesize) VALUES (:unique_id, :user_id, :title, :description, :visibility, :mime_type, :filesize)");
+		    	$statement->execute($input);
+
+		    	$response['id'] = $dbh->lastInsertId();
+
+		    	if(!is_null($data->category) && is_int($data->category)){
+		    		try
+		    		{
+		    			$category_map = array('video_id' => $response['id'], 'category_id' => $data->category);
+
+		    			$statement = $dbh->prepare("INSERT INTO VIDEO_Category_map (video_id, category_id) VALUES (:video_id, :category_id)");
+		    			$statement->execute($category_map);
+		    		}
+		    		catch(PDOException $ex)
+					{
+						error_log($ex);
+						$dbh = null;
+						return false;
+					}
+		    	}
+		    	elseif(!is_null($data->category) && is_string($data->category))
+		    	{
+		    		$category_data = array('name' => $data->category);
+		    		$statement = $dbh->prepare("INSERT INTO META_Category (name) VALUES (:name)");
+		    		$statement->execute($category_data);
+
+		    		$category_id = $dbh->lastInsertId();
+
+		    		$category_map = array('video_id' => $response['id'], 'category_id'=> $category_id);
+		    		$statement = $dbh->prepare("INSERT INTO VIDEO_Category_map (video_id, category_id) VALUES (:video_id, :category_id)");
+		    		$statement->execute($category_map);
+		    	}
 			}
 			catch(PDOException $ex)
 			{
@@ -111,7 +141,7 @@ $app->post('/sync', function() use ($app) {
 				return false;
 			}
 
-			$response['id'] = $dbh->lastInsertId();
+			
 			$dbh = null;
 
 

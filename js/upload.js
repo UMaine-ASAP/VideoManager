@@ -166,7 +166,7 @@
 			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description" style="width: 100%"></textarea></div></div></form>';
 			string += '</td><td style="position: relative;">';
 			string += '<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
-			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visibility" class="btn-group" data-toggle="buttons-radio" ><a id="public" data-content="Determines if Video will be visible on MarcelTV" class="btn active" value="0">Public</a><a class="btn" data-content="Determines if Video will be visible on MarcelTV" id="private" value="1">Private</a></div></div></div>';
+			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visibility" class="btn-group" data-toggle="buttons-radio" ><a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn active" value="0">Public</a><a class="btn" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1">Private</a></div></div></div>';
 			string += '<div class="control-group"><label class="control-label" for="category">Category</label><div class="controls"><input type=\"hidden\" id=\"category\"></input></div></div></form></td></table>';
 			//$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
 			//$(this.el).html('<td>Title  <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><br>Category <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success btn-large\">Queue</button></td>');
@@ -203,11 +203,20 @@
 		 */
 
 		queue: function() {
+			var category;
+			var category_select =  $(this.el).find("#category").select2("val").split(',');
 
+			if(category_select[0] == '-1'){
+				category = String(category_select[1]);
+			}
+			else {
+				category = Number(category_select[0]);
+			}
 
 			var changed = {
 				description: $(this.el).find("textarea").val(),
-				visibility: $(this.el).find("#visibility").children('.active').val(),
+				visibility: $(this.el).find("#visibility").children('.active').attr("id"),
+				category: category,
 				status: "1",
 			}
 
@@ -235,7 +244,7 @@
 		 */
 
 		upload: function() {
-
+			//TODO: Type checking before upload
 
 			// Static definitions for common elements because I can't pass this to the socket functions
 			var el = this.el;

@@ -1,11 +1,11 @@
 	<html>
 	<script>
 	function format_category(category){
-		if(category.category_id == '-1'){
-			return category.name + "  <span class=\"label label-warning\" style=\"display: inline;\">New</span>";
+		if(category.id[0] == '-1'){
+			return category.text + "  <span class=\"label label-warning\" style=\"display: inline;\">New</span>";
 		}
 		else {
-			return category.name;
+			return category.text;
 		}
 	}
 
