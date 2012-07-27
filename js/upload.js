@@ -10,6 +10,8 @@
 		console.log("Bucky McBuckington (That's not good!)");
 	}
 
+	Backbone.emulateHTTP = true;
+	Backbone.emulateJSON = true;
 	/* Backbone Model: File
 	*	Model used to store attributes of files being uploaded
 	*
@@ -247,7 +249,7 @@
 			// Static definitions before I added the definitions at the top (Rework)
 			var fileName = this.model.get('title');
 			var fileSize = this.model.get('size');
-			var fileType = this.model.get('type');
+			var fileID = this.model.get('id');
 
 			// Initialize the HTML5 File Reader
 			FReader = new FileReader();
@@ -257,7 +259,7 @@
 
 				socket.emit('Upload', {'Name' : fileName, Data: event.target.result });
 			}
-			socket.emit('Start', {'Name': fileName, 'Size': fileSize, 'Type': fileType });
+			socket.emit('Start', {'Name': fileName, 'Size': fileSize, 'id': fileID });
 
 			// Once again, static definition I should rework
 			var SelectedFile = this.model.get('file');

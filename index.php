@@ -85,8 +85,43 @@ $app->post('/register', function() use ($app){
 });
 
 $app->post('/sync', function() use ($app) {
-	$response['id'] = '25';
-	echo json_encode($response);
+
+	if(!AuthenticationController::checkLogin())
+	{
+		return redirect('/login');
+	}
+	else 
+	{
+		if(!is_null($_POST['model']))
+		{
+			$data = json_decode($_POST['model']);
+			try
+			{
+				$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
+		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		    	$data = array('unique_id' => substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size);
+
+		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, mime_type, filesize) VALUES (:unique_id, :user_id, :title, :description, :mime_type, :filesize)");
+		    	$statement->execute($data);
+			}
+			catch(PDOException $ex)
+			{
+				error_log($ex);
+				$dbh = null;
+				return false;
+			}
+
+			$response['id'] = $dbh->lastInsertId();
+			$dbh = null;
+
+
+			echo json_encode($response);
+		}
+		else 
+		{
+			return false;
+		}
+	}
 });
 
 $app->get('/videos', function() use ($app) {
