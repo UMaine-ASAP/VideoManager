@@ -163,7 +163,7 @@
 
 			var string = '<td style="width: 60%;"><h4>' + this.model.get('title') + '</h4><br>';
 			string += '<form class="form-horizontal"><div class="control-group"><label class="control-label" for="title">Change Title</label><div class="controls"><input type="text" class="input-xlarge" id="title" value="'+this.model.get('title')+'"></div></div>';
-			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description" style="width: 100%"></textarea></div></div></form>';
+			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description" style="width: 100%; height: 150px;"></textarea></div></div></form>';
 			string += '</td><td style="position: relative;">';
 			string += '<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
 			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visibility" class="btn-group" data-toggle="buttons-radio" ><a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn active" value="0">Public</a><a class="btn" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1">Private</a></div></div></div>';
