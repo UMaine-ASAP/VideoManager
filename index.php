@@ -3,6 +3,7 @@ session_start();
 
 require_once('controllers/authentication.php');
 require_once('controllers/users.php');
+require_once('controllers/video.php');
 
 require_once('libraries/helpers.php');
 require_once('libraries/Slim/Slim.php');
@@ -158,9 +159,20 @@ $app->get('/videos', function() use ($app) {
 	include('templates/videos.php');
 });
 
-$app->get('/edit/meta/:id', function($id) use ($app) {
-
-	include('templates/editMeta.php');
+$app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
+	if($mode == "meta"){
+		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
+			include('templates/editMeta.php');
+		}
+		else {
+			$app->flash('error', 'You do not have premission to edit that video');
+			return redirect ('/videos');
+		}
+	}
+	else {
+		$app->flash('error', 'Invalid Edit Mode');
+		return redirect ('/videos');
+	}
 });
 
 $app->run();

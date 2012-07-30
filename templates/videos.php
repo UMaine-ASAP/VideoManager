@@ -14,6 +14,13 @@
 
 	<div class="container" style="height: 100%;">
 
+		<?PHP
+		if(isset($_SESSION['slim.flash']['error'])){
+    		echo "<div class=\"alert alert-error\">";
+    		echo $_SESSION['slim.flash']['error'];
+    		echo "</div>";
+    	}
+    	?>
 		<div class="row">
 
 			<div class="span4">
@@ -30,7 +37,7 @@
 
 			<div class="span8">
 				<h2>My Videos</h2>
-				<table class="table">
+				<table class="table table-bordered">
 
 					<?php
 
