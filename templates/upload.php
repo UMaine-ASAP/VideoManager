@@ -20,7 +20,7 @@
 		<div class="page-header">
 			<h1>Upload Files:</h1>
 		</div>
-		<div id="upload_list">
+		<div id="upload_list" class="well">
 		</div>
 	</div>
 
