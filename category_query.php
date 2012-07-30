@@ -24,7 +24,7 @@ require_once('libraries/settings.php');
 			}
 
 foreach($row as $value){
-	if($value['name'] == $_GET['q']){
+	if($value['text'] == $_GET['q']){
 		header('Content-type: application/json');
 		echo json_encode($row);
 		exit;
