@@ -1,11 +1,12 @@
+<?PHP include('libraries/settings.php'); ?>
+
 <head>
-		<script src="js/jquery.js"></script>
-		<link href="bootstrap/css/bootstrapold.css" rel="stylesheet">
-		<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-		<link href="libraries/marceltv.css" rel="stylesheet">
-		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
-		<link href="libraries/select2.css" rel="stylesheet">
-		<script src="js/select2.js" rel="stylesheet"></script>
+		<script src="<?PHP echo $GLOBALS['web_root']; ?>/js/jquery.js"></script>
+		<link href="<?PHP echo $GLOBALS['web_root']; ?>/bootstrap/css/bootstrapold.css" rel="stylesheet">
+		<link href="<?PHP echo $GLOBALS['web_root']; ?>/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="<?PHP echo $GLOBALS['web_root']; ?>/libraries/marceltv.css" rel="stylesheet">
+		<link href="<?PHP echo $GLOBALS['web_root']; ?>/libraries/select2.css" rel="stylesheet">
+		<script src="<?PHP echo $GLOBALS['web_root']; ?>/js/select2.js" rel="stylesheet"></script>
 
 		<style type="text/css">
 			body {
