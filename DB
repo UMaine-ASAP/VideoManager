@@ -67,7 +67,7 @@
 <default>NULL</default><relation table="AUTH_Users" row="user_id" />
 </row>
 <row name="title" null="1" autoincrement="0">
-<datatype>VARCHAR(25)</datatype>
+<datatype>VARCHAR(100)</datatype>
 <default>NULL</default></row>
 <row name="description" null="1" autoincrement="0">
 <datatype>MEDIUMTEXT</datatype>
@@ -80,6 +80,9 @@
 <default>NULL</default></row>
 <row name="md5" null="1" autoincrement="0">
 <datatype>VARCHAR(32)</datatype>
+<default>NULL</default></row>
+<row name="upload_date" null="1" autoincrement="0">
+<datatype>DATE</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>video_id</part>
