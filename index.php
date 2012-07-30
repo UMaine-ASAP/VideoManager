@@ -101,7 +101,7 @@ $app->post('/sync', function() use ($app) {
 		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		    	$input = array('unique_id' => substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size, 'visibility' => $data->visibility);
 
-		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, visibility, mime_type, filesize) VALUES (:unique_id, :user_id, :title, :description, :visibility, :mime_type, :filesize)");
+		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, visibility, mime_type, filesize, upload_date) VALUES (:unique_id, :user_id, :title, :description, :visibility, :mime_type, :filesize, NOW())");
 		    	$statement->execute($input);
 
 		    	$response['id'] = $dbh->lastInsertId();
@@ -158,6 +158,10 @@ $app->get('/videos', function() use ($app) {
 	include('templates/videos.php');
 });
 
+$app->get('/edit/meta/:id', function($id) use ($app) {
+
+	include('templates/editMeta.php');
+});
 
 $app->run();
 

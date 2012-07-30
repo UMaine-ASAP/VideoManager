@@ -14,36 +14,64 @@
 
 	<div class="container" style="height: 100%;">
 
-		<div class="videos pull-right" style="width: 900px;">
+		<div class="row">
 
-			<table class="table table-striped" id="video_table">
-				<tr>
-					<td style="position: relative">
-						<button class="btn btn-danger" style="position: absolute; right: 90px; bottom: 10px;"><i class="icon-remove icon-white"></i> Delete</button>
-						<div class="btn-group" style="position: absolute; left: 10px; bottom: 10px;">
-							<button class="btn dropdown-toggle" data-toggle="dropdown">
-								Modify
-								<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a href="#">Edit Meta Data</a></li>
-								<li><a href="#">Reconvert</a></li>
-							</ul>
-						</div>
+			<div class="span4">
+				<h2>My Account</h2>
+				<div class="profile">
+				
 
-						<div style="width: 100%;">
-							<div style="float: left">
-								<img src="http://placekitten.com/230/110">
+				<div><div class="thumbnail pull-left" style="margin-right: 10px;"><img src="http://placehold.it/160x120"></div>
+					<div class="user_data">Benjamin Carlson<br>carlson.j.ben@gmail.com</div>
+				</div>
+
+			</div></div>
+
+
+			<div class="span8">
+				<h2>My Videos</h2>
+				<table class="table">
+
+					<?php
+
+					$videos = VideoController::getUserVideos(AuthenticationController::getCurrentUserID());
+
+					foreach($videos as $video){
+						?>
+						<tr><td>
+						<div class="video_list">
+
+							<div class="video_thumbnail">
+								<img src="http://placekitten.com/180/100">
 							</div>
-							<div style="float: left; padding-left: 8px;">
-								<h3>This is a video title</h3>
+
+							<div class="video_info">
+								<h3><? echo $video['title'] ?></h3>
+								<div class="control_buttons">
+									<div class="btn-group" data-toggle="buttons-radio">
+									  <a href="edit/meta/<?PHP echo $video['video_id'] ?>" class="btn">Edit Meta</a>
+									  <button class="btn disabled">Privileges</button>
+									  <button class="btn disabled">Conversion</button>
+									</div>
+								</div>
 							</div>
-							<div style="float: right;">
-								Categories
+
+							<div class="extra_meta pull-right">
+								<p><i class="icon-calendar"></i><?PHP echo $video['upload_date']; ?></p>
 							</div>
+
 						</div>
-					</td>
-				</tr>
+					</tr></td>
+
+						<?
+					}
+
+					?>
+
+				</table>
+
+			</div>
+
 		</div>
 
 	</div>
