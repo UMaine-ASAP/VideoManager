@@ -1,6 +1,47 @@
 .description {
 	font-size: .8em;
 }
-#video_table tbody tr td {
-	margin-top: 30px;
+.profile {
+	border: 1px solid #E0DBD7;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	height: 100%;
+	padding: 5px;
+}
+.videos {
+	height: 100%;
+	padding: 5px;
+}
+.user_data{
+	padding-left: 10px;
+}
+#uploads_container {
+
+}
+.video_list {
+	width: 100%;
+}
+.video_thumbnail {
+	width: 180px;
+	height: 100px;
+	display: inline-block;
+}
+
+.video_info {
+	display: inline-block;
+	vertical-align: top;
+	padding-left: 10px;
+	height: inherit;
+}
+.control_buttons {
+	margin-top: 35px;
+}
+.extra_meta {
+	width: 110px;
+	padding-left: 5px;
+	padding-top: 5px;
+	border-left: 1px solid #E0DBD7;
+	height: 95px;
+	vertical-align: middle;
+	font-size: 75%;
 }
