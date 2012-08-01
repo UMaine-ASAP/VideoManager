@@ -9,13 +9,14 @@
 						<div class="control-group">
 							<label class="control-label" for="title">Change Title</label>
 							<div class="controls">
-								<input type="text" class="input-xlarge" id="title" value="category_query.php">
+								<input type="text" class="input-xlarge" id="title" value="{{video.title}}">
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label" for="description">Description</label>
 							<div class="controls">
-								<textarea id="description" style="width: 100%; height: 150px;"></textarea>
+								<textarea id="description" style="width: 100%; height: 150px;"
+								{{video.description}}></textarea>
 							</div>
 						</div>
 					</form>
@@ -28,8 +29,8 @@
 							<label class="control-label" for="private">Visibility</label>
 							<div class="controls">
 								<div id="visibility" class="btn-group" data-toggle="buttons-radio">
-									<a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn" value="0" data-original-title="">Public</a>
-									<a class="btn active" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1" data-original-title="">Private</a>
+									<a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn {% if video.visibility == 1 %}active{% endif %}" value="0" data-original-title="">Public</a>
+									<a class="btn {% if video.visibility != 1 %}active{% endif %}" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1" data-original-title="">Private</a>
 								</div>
 							</div>
 						</div>
