@@ -32,7 +32,7 @@ $userArray = UserController::getUserDetails(AuthenticationController::GetCurrent
 						</a>
 
 						<ul class="dropdown-menu">
-							<li><a href="#">My Videos</a></li>
+							<li><a href="videos">My Videos</a></li>
 							<li class="divider"></li>
 							<li><a href="logout">Sign Out</a></li>
 						</ul>
