@@ -118,6 +118,9 @@
 		text-decoration: none;
 	}
 
+	#all-videos {
+		margin-top: 12px;
+	}
 	</style>
 {% endblock %}
 
@@ -127,13 +130,13 @@
 		{% if flash['error'] %}
 			<div class='alert alert-error'>{{ flash['error'] }}</div>
 		{% endif %}
+		<h1>Manage Videos</h1>
+		<br>
 		<div class="row">
 
 			<div class="span3">
-				&nbsp;
 				<div id='category-container'>
-				<h2>Categories</h2>
-					<div class='category'><a {% if selectedCategory == -1 %}class='active'{% endif %} href='{{ flash['web_root'] }}/videos'>All Videos <span class='video-count'>({{ totalVideoCount }})</span></a></div>
+					<div class='category' id='all-videos'><a {% if selectedCategory == -1 %}class='active'{% endif %} href='{{ flash['web_root'] }}/videos'>All Videos <span class='video-count'>({{ totalVideoCount }})</span></a></div>
 				<div id="categories">
 					{% for category in categories %}
 					<div class='category'>
@@ -144,6 +147,8 @@
 				</div>
 				<a id='add-category' class='btn btn-primary'>Add Category</a>
 				</div>
+				&nbsp;
+
 			</div>
 			<div class="span9" style='position:relative;'>
 				<h2 style='position: absolute;'>{{ categoryName }}</h2>
