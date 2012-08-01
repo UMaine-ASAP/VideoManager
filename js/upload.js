@@ -360,10 +360,10 @@
 	*/
 
 	var QueueView = Backbone.View.extend({
-		el: $('#upload_list'), // Setups up a simple selector for all HTML pieces of the View
+		el: $('#upload_list_container'), // Setups up a simple selector for all HTML pieces of the View
 
 		events: {
-			"click a#add_item": 'addFile',
+			"click a#add_video": 'addFile',
 		},
 
 		initialize: function() {
@@ -379,8 +379,8 @@
 		render: function() {
 			var self = this;
 
-			$(this.el).append("<a class=\"btn btn-primary pull-right\" id=\"add_item\"><i class=\"icon-plus icon-white\"></i> Add Another</a>");
-			$(this.el).append("<table class=\"table table-striped\"><thead><tr><td width=\"40%\"></td><td width=\"60%\"></td></tr></thead></table>");
+			$(this.el).append("<a class=\"btn btn-primary pull-right\" id=\"add_video\"><i class=\"icon-plus icon-white\"></i> Add Another</a>");
+			$(this.el).append("<table id=\"upload-list\" class=\"table table-striped\"><thead><tr><td width=\"40%\"></td><td width=\"60%\"></td></tr></thead></table>");
 		},
 
 		addFile: function(){
