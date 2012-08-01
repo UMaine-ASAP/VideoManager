@@ -43,7 +43,7 @@ $userArray = UserController::getUserDetails(AuthenticationController::GetCurrent
 							<span class="icon-bar"></span>
 						</a>
 					</div>
-				<?
+				<?php
 				}
 				?>
 			</div>

@@ -4,11 +4,11 @@
 ?>
 	<html>
 	
-	<? require_once('templates/header.php'); ?>
+	<?php require_once('templates/header.php'); ?>
 
 	<body>
 
-	<? require_once('templates/navbar.php'); ?>
+	<?php require_once('templates/navbar.php'); ?>
 
 <?PHP
 echo "<pre>";
@@ -47,7 +47,7 @@ echo "</pre>";
 	</div>
 </div>
 
-<? require_once('templates/footer.php');?>
+<?php require_once('templates/footer.php');?>
 
 	</body>
 </html>

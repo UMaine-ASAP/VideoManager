@@ -1,15 +1,15 @@
-	<?
+	<?php
 	require_once('controllers/authentication.php');
 	require_once('controllers/video.php');
 	?>
 
 	<html>
 	
-	<? require_once('templates/header.php'); ?>
+	<?php require_once('templates/header.php'); ?>
 
 	<body>
 
-	<? require_once('templates/navbar.php'); ?>
+	<?php require_once('templates/navbar.php'); ?>
 
 
 	<div class="container" style="height: 100%;">
@@ -53,10 +53,10 @@
 							</div>
 
 							<div class="video_info">
-								<h3><? echo $video['title'] ?></h3>
+								<h3><?php echo $video['title']; ?></h3>
 								<div class="control_buttons">
 									<div class="btn-group" data-toggle="buttons-radio">
-									  <a href="edit/meta/<?PHP echo $video['video_id'] ?>" class="btn">Edit Meta</a>
+									  <a href="edit/meta/<?php echo $video['video_id']; ?>" class="btn">Edit Meta</a>
 									  <button class="btn disabled">Privileges</button>
 									  <button class="btn disabled">Conversion</button>
 									</div>
@@ -64,13 +64,13 @@
 							</div>
 
 							<div class="extra_meta pull-right">
-								<p><i class="icon-calendar"></i><?PHP echo $video['upload_date']; ?></p>
+								<p><i class="icon-calendar"></i><?php echo $video['upload_date']; ?></p>
 							</div>
 
 						</div>
 					</tr></td>
 
-						<?
+						<?php
 					}
 
 					?>
