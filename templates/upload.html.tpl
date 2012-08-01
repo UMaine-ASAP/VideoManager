@@ -24,7 +24,7 @@
 {% block content %}
 	<div id="uploads_container" class="container" style="height: 100%;">
 		<div class="page-header">
-			<h1>Upload Files:</h1>
+			<h1>Upload Videos</h1>
 		</div>
 		<div id="upload_list_container" class="well">
 		</div>
