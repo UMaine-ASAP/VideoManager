@@ -72,6 +72,9 @@ $app->get('/logout', function() use ($app) {
 });
 
 $app->post('/register', function() use ($app){
+	$app->flash('error', 'Registration is currently disabled');
+	return redirect('/login');
+	exit(1);
 	if($_POST['username'] == "" || $_POST['password'] == "" || $_POST['email'] == "" || $_POST['first_name'] == "" || $_POST['last_name'] == "")
 	{
 		$app->flash('error', 'All fields are required.');
