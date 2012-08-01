@@ -1,21 +1,40 @@
 {% extends 'layout.html.tpl' %}
 {% block content %}
-	<div class="container" style="height: 100%;">
+<div class="container" style="height: 100%;">
 
-		<div class="page-header">
-			<h1>MarcelTV Uploader:</h1>
-		</div>
+	<div class="page-header">
+		<h1>Marcel TV Uploader</h1>
+	</div>
+
+
+
+
+	<div style='width: 250px; margin: 0 auto;'>
 
 		{% if flash['header'] %}
 			<div class='alert alert-success'>{{ flash['header'] }}</div>
 		{% elseif flash['error'] %}
 			<div class='alert alert-error'>{{ flash['error'] }}</div>
-		{% endif %}
+		{% endif %}			
 
 		<div class="well">
 
-			<div class="row">
-				<div class="span6">
+		
+			<h2>Login</h2>
+			<hr>
+  		
+  			<form method="post" action="login">
+				<label for="username">Username: </label><input type="text" name="username"><br>
+				<label for="password">Password: </label><input type="password" name="password"><br>
+
+				<div class="form-actions">
+					<input class="btn btn-large btn-inverse" type="submit" value="Login">
+				</div>
+
+			</form>
+		</div>
+			<!--
+			<div class="span6 well">
 					<h2>Register</h2>
 					<hr>
   					<form method="post" action="register">
@@ -30,23 +49,11 @@
 					</div>
 
 					</form>
-				</div>				
-				<div class="span5">
-					<h2>Login</h2>
-					<hr>
-  					<form method="post" action="login">
-					<label for="username">Username: </label><input type="text" name="username"><br>
-					<label for="password">Password: </label><input type="password" name="password"><br>
-
-					<div class="form-actions">
-						<input class="btn btn-large btn-inverse" type="submit" value="Login">
-					</div>
-
-					</form>
 				</div>
-			</div>
 
-		</div>
+			</div>
+			-->
+
 	</div>
 </div>
 {% endblock %}
