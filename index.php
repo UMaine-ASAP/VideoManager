@@ -21,10 +21,11 @@ $app = new Slim(array(
  * 
  *  Renders the template with given data and global data
  */
-function render($templateName, $data) {
+function render($templateName, $data, $location='') {
 	// Set special global values for every template
 	$userData = UserController::getUserDetails(AuthenticationController::GetCurrentUserID());
 	
+	$GLOBALS['app']->flashNow('location', $location);
 	$GLOBALS['app']->flashNow('userData', $userData);
 	$GLOBALS['app']->flashNow('web_root', $GLOBALS['web_root']);
 
@@ -39,7 +40,7 @@ $app->get('/', function() use ($app) {
 		return redirect('/login');
 	}
 	else{
-		$app->redirect('/upload');
+		return redirect('/upload');
 	}
 });
 
@@ -114,7 +115,7 @@ $app->get('/upload', function() use ($app) {
 		return redirect('/login');
 	}
 	else {
-		render('upload.html.tpl', array());
+		render('upload.html.tpl', array(), 'upload');
 	}
 });
 
@@ -122,7 +123,64 @@ $app->get('/upload', function() use ($app) {
 /*********************/
 /* Video Management
 /*********************/
-$app->get('/videos', function() use ($app) {
+$app->get('/videos(/:category_id)', function($category_id=-1) use ($app) {
+	$categories = VideoController::getAllCategories();
+	$totalVideoCount = VideoController::getTotalVideoCount();
+	$videos = array( 
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),								
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'));
+
+	$videos = videoController::getVideosInCategory($category_id);
+
+	// Get category name
+	$categoryName = "All Videos";
+	if( $category_id != -1) {
+		$found = false;	
+		foreach( $categories as $category) {
+			if( $category['id'] == $category_id) {
+				$categoryName = $category['name'];
+				$found = true;
+				break;
+			}
+		}
+		if( !$found ) {
+			$categoryName = "Category not found. Please choose a category on the left.";
+		}
+
+	}
+
+	render('videos.html.tpl', array('videos'=>$videos, 'categories'=>$categories, 'selectedCategory'=>$category_id, 'categoryName'=>$categoryName, 'totalVideoCount' => $totalVideoCount), 'videos');
+});
+
+$app->get('/my-videos', function() use ($app) {
 	$videos = VideoController::getUserVideos(AuthenticationController::getCurrentUserID());
 	$videos = array( 
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),
@@ -130,15 +188,15 @@ $app->get('/videos', function() use ($app) {
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),								
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'));
 
-	render('videos.html.tpl', array('videos'=>$videos));
+	render('my-videos.html.tpl', array('videos'=>$videos));
 });
 
 
 $app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
-	//VideoController::getVideoMeta($id);
+	$video = VideoController::getVideoMeta($id);
 	if($mode == "meta"){
 		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
-			render('editMeta.html.tpl');
+			render('editMeta.html.tpl', array('video'=>$video), 'videos' );
 		}
 		else {
 			$app->flash('error', 'You do not have premission to edit that video');
@@ -150,6 +208,7 @@ $app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
 		return redirect ('/videos');
 	}
 });
+
 
 
 

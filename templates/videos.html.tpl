@@ -1,11 +1,123 @@
 {% extends 'layout.html.tpl' %}
 {% block header_extra %}
 	<style>
+
+	.clear { clear: both; }
 	#upload_new_video_btn {
-		position: absolute;
-		top: 0;
-		right: 0;
+		float: right;
+		margin-top: -10px;
+		margin-bottom: 20px;
 	}
+	#category-container {
+		position: fixed;
+
+	}
+
+	#categories {
+	border: 1px solid #E0DBD7;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	padding: 5px;
+	width: 220px;
+		background-color: whiteSmoke;
+	}
+	.category {
+		margin: 5px 0;
+	}
+	.category a {
+		font-size: 20px;
+	}
+	.video-count {
+		font-size: 10px;
+	}
+
+	#video-list {
+		border: 1px solid #DDD;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		border-radius: 4px;
+		width: 100%;
+		margin-bottom: 18px;
+		margin-left: 0px;
+	}
+
+	.video {
+		list-style-type: none;
+		border-bottom: 1px solid #DDD;
+
+		padding: 8px;
+		line-height: 18px;
+		margin-left: 0;
+		position: relative;
+	}
+
+	.video .title {
+		margin-top: -4px;
+		margin-bottom: 20px;
+
+	}
+
+	.video:nth-child(even) {
+		background-color: #F9F9F9;
+	}
+
+	.video:nth-child(odd){
+		background-color: whiteSmoke;
+	}
+	.video .group {
+		display: inline-block;
+		margin-left: 20px;
+		float: left;
+		vertical-align: middle;
+	}
+	#video_thumbnail {
+		width: 180px;
+	}
+
+	#video_info {
+
+		width: 350px;
+		word-wrap: break-word;
+		overflow-x: scroll;
+		height: 100px;
+	}
+
+	#video_stats {
+		width: 175px;
+	}
+
+	.visibility {
+		font-size: 16px;
+		font-weight: bolder;
+		position: absolute;
+		right: 100px;
+		top: 7px;
+		padding: 6px;
+		padding-bottom: 8px;
+	}
+
+	.field-value-set {
+		margin-bottom: 15px;
+	}
+
+	.field {
+		font-size: 14px;
+		font-weight: bolder;
+		line-height: 18px;
+	}
+
+	#add-category {
+		margin-top: 5px;
+	}
+
+	a.active {
+		color: #97310e;
+	}
+
+	a.active:hover {
+		text-decoration: none;
+	}
+
 	</style>
 {% endblock %}
 
@@ -17,51 +129,69 @@
 		{% endif %}
 		<div class="row">
 
-			<div class="span4">
-				<h2>My Account</h2>
-				<div class="profile">
-				
+			<div class="span3">
+				&nbsp;
+				<div id='category-container'>
+				<h2>Categories</h2>
+					<div class='category'><a {% if selectedCategory == -1 %}class='active'{% endif %} href='{{ flash['web_root'] }}/videos'>All Videos <span class='video-count'>({{ totalVideoCount }})</span></a></div>
+				<div id="categories">
+					{% for category in categories %}
+					<div class='category'>
+						<a {% if category.id == selectedCategory %}class='active'{% endif %} href='{{ flash['web_root'] }}/videos/{{ category.id }}'>{{ category.name }} <span class='video-count'>({{ category.video_count }})</span></a>
+					</div>
+					{% endfor %}
 
-				<div><div class="thumbnail pull-left" style="margin-right: 10px;"><img src="http://placehold.it/160x120"></div>
-					<div class="user_data">Benjamin Carlson<br>carlson.j.ben@gmail.com</div>
 				</div>
-
-			</div></div>
-
-
-			<div class="span8" style='position:relative;'>
-				<h2>My Videos</h2>
-				<a class='btn btn-success' id='upload_new_video_btn' href='upload'>Upload New Video</a>
-				<table class="table table-bordered">
+				<a id='add-category' class='btn btn-primary'>Add Category</a>
+				</div>
+			</div>
+			<div class="span9" style='position:relative;'>
+				<h2 style='position: absolute;'>{{ categoryName }}</h2>
+				<a class='btn btn-success' id='upload_new_video_btn' href='{{flash['web_root']}}/upload'>Upload New Video</a>
+				<div style='clear: both'></div>
+					<ul id='video-list'>
 					{% for video in videos %}
-						<tr><td>
-						<div class="video_list">
-
-							<div class="video_thumbnail">
+						<li class="video">
+							<header>
+							<h3 class='title'>{{ video.title }} </h3>
+								{% if video.visibility == 1 %}
+									<span class='visibility label label-important'>Publicly Available</span>
+								{% else %}
+									<span class='visibility label'>Private Video</span>
+								{% endif %}
+							{% if video.owner_id == flash['userData']['user_id'] %}
+							<a style="position: absolute; top: 7px; right: 34px;" href="{{ flash['web_root'] }}/edit/meta/{{ video.id }}" class="btn">Edit</a>
+<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">x</button>
+							{% endif %}
+						</header>
+							<div class='group' id="video_thumbnail">
 								<img src="http://placekitten.com/180/100">
 							</div>
 
-							<div class="video_info">
-								<h3>{{ video.title }}</h3>
-								<div class="control_buttons">
-									<div class="btn-group" data-toggle="buttons-radio">
-									  <a href="edit/meta/{{ video.video_id }}" class="btn">Edit Meta</a>
-									  <button class="btn disabled">Privileges</button>
-									  <button class="btn disabled">Conversion</button>
-									</div>
+							<div class='group' id="video_info">
+								<p> {{ video.description }}</p>								
+							</div>
+
+							<div class='group' id="video_stats">
+								<div class='field-value-set'>
+									<span class='field'>Duration</span>
+									<span class='value'>{{ video.length }}</span>
 								</div>
+								<div class='field-value-set'>
+									<span class='field'>Uploaded on</span>
+									<span class='value'>{{ video.upload_date }}</span>
+								</div>
+								<div class='field-value-set'>
+									<span class='field'>Uploaded by</span>
+									<span class='value'>{{ video.owner }}</span>
+								</div>
+
 							</div>
 
-							<div class="extra_meta pull-right">
-								<p><i class="icon-calendar"></i>{{ video.upload_date }}</p>
-							</div>
-
-						</div>
-					</td></tr>
+							<div class='clear'></div>
+						</li>
 					{% endfor %}
-
-				</table>
-
+					</ul>
 			</div>
 
 		</div>
