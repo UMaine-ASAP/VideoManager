@@ -1,134 +1,196 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- SQL XML created by WWW SQL Designer, http://code.google.com/p/wwwsqldesigner/ -->
-<!-- Active URL: http://localhost/wwwsqldesigner/ -->
-<sql>
-<datatypes db="mysql">
-	<group label="Numeric" color="rgb(238,238,170)">
-		<type label="Integer" length="0" sql="INTEGER" re="INT" quote=""/>
-		<type label="Decimal" length="1" sql="DECIMAL" re="DEC" quote=""/>
-		<type label="Single precision" length="0" sql="FLOAT" quote=""/>
-		<type label="Double precision" length="0" sql="DOUBLE" re="DOUBLE" quote=""/>
-	</group>
+-- phpMyAdmin SQL Dump
+-- version 3.5.0
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Aug 01, 2012 at 09:42 AM
+-- Server version: 5.1.41-3ubuntu12.10
+-- PHP Version: 5.3.14-1~dotdeb.0
 
-	<group label="Character" color="rgb(255,200,200)">
-		<type label="Char" length="1" sql="CHAR" quote="'"/>
-		<type label="Varchar" length="1" sql="VARCHAR" quote="'"/>
-		<type label="Text" length="0" sql="MEDIUMTEXT" re="TEXT" quote="'"/>
-		<type label="Binary" length="1" sql="BINARY" quote="'"/>
-		<type label="Varbinary" length="1" sql="VARBINARY" quote="'"/>
-		<type label="BLOB" length="0" sql="BLOB" re="BLOB" quote="'"/>
-	</group>
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
-	<group label="Date &amp; Time" color="rgb(200,255,200)">
-		<type label="Date" length="0" sql="DATE" quote="'"/>
-		<type label="Time" length="0" sql="TIME" quote="'"/>
-		<type label="Datetime" length="0" sql="DATETIME" quote="'"/>
-		<type label="Year" length="0" sql="YEAR" quote=""/>
-		<type label="Timestamp" length="0" sql="TIMESTAMP" quote="'"/>
-	</group>
-	
-	<group label="Miscellaneous" color="rgb(200,200,255)">
-		<type label="ENUM" length="1" sql="ENUM" quote=""/>
-		<type label="SET" length="1" sql="SET" quote=""/>
-		<type label="Bit" length="0" sql="bit" quote=""/>
-	</group>
-</datatypes><table x="224" y="249" name="AUTH_Users">
-<row name="user_id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="username" null="1" autoincrement="0">
-<datatype>VARCHAR(50)</datatype>
-<default>NULL</default></row>
-<row name="password" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
-<row name="email" null="1" autoincrement="0">
-<datatype>VARCHAR(100)</datatype>
-<default>NULL</default></row>
-<row name="first" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
-<row name="last" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>user_id</part>
-</key>
-</table>
-<table x="1096" y="24" name="VIDEO_Upload_data">
-<row name="video_id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="unique_id" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
-<row name="owner_id" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="AUTH_Users" row="user_id" />
-</row>
-<row name="title" null="1" autoincrement="0">
-<datatype>VARCHAR(100)</datatype>
-<default>NULL</default></row>
-<row name="description" null="1" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>NULL</default></row>
-<row name="mime_type" null="1" autoincrement="0">
-<datatype>VARCHAR(25)</datatype>
-<default>NULL</default></row>
-<row name="filesize" null="1" autoincrement="0">
-<datatype>DECIMAL(15)</datatype>
-<default>NULL</default></row>
-<row name="md5" null="1" autoincrement="0">
-<datatype>VARCHAR(32)</datatype>
-<default>NULL</default></row>
-<row name="upload_date" null="1" autoincrement="0">
-<datatype>DATE</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>video_id</part>
-</key>
-</table>
-<table x="1123" y="430" name="META_Category">
-<row name="category_id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="name" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>category_id</part>
-</key>
-</table>
-<table x="777" y="278" name="VIDEO_Category_map">
-<row name="id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="video_id" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="VIDEO_Upload_data" row="video_id" />
-</row>
-<row name="category_id" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="META_Category" row="category_id" />
-</row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="551" y="29" name="VIDEO_Premissions_map">
-<row name="id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="video_id" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="VIDEO_Upload_data" row="video_id" />
-</row>
-<row name="user_id" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="AUTH_Users" row="user_id" />
-</row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-</sql>
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `blackbox`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `AUTH_Users`
+--
+
+CREATE TABLE IF NOT EXISTS `AUTH_Users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `first` varchar(25) DEFAULT NULL,
+  `last` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `AUTH_Users`
+--
+
+INSERT INTO `AUTH_Users` (`user_id`, `username`, `password`, `email`, `first`, `last`) VALUES
+(1, 'bcarlson', '$2a$08$7svWCFeNQpBNwvzEYZp.iOllrTTscYrMR..FwEtP.toImIFmXcBpu', 'carlson.j.ben@gmail.com', 'Benjamin', 'Carlson'),
+(2, 'test', '$2a$08$6i9FEBEi6lWl74owRR/WwuYpA9DlwNv93m6WYhCSd.IdrG8GpASXe', 'test', 'test', 'test');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `META_Category`
+--
+
+CREATE TABLE IF NOT EXISTS `META_Category` (
+  `category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`category_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `META_Category`
+--
+
+INSERT INTO `META_Category` (`category_id`, `name`) VALUES
+(1, 'test'),
+(2, 'new'),
+(3, 'i like categories');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `VIDEO_Category_map`
+--
+
+CREATE TABLE IF NOT EXISTS `VIDEO_Category_map` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `video_id` int(11) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `video_id` (`video_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `VIDEO_Category_map`
+--
+
+INSERT INTO `VIDEO_Category_map` (`id`, `video_id`, `category_id`) VALUES
+(1, 32, 1),
+(2, 33, 2),
+(3, 34, 3),
+(4, 35, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `VIDEO_Premissions_map`
+--
+
+CREATE TABLE IF NOT EXISTS `VIDEO_Premissions_map` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `video_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `video_id` (`video_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `VIDEO_Upload_data`
+--
+
+CREATE TABLE IF NOT EXISTS `VIDEO_Upload_data` (
+  `video_id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_id` varchar(15) DEFAULT NULL,
+  `owner_id` int(11) DEFAULT NULL,
+  `title` varchar(25) DEFAULT NULL,
+  `description` mediumtext,
+  `visibility` int(1) DEFAULT NULL,
+  `mime_type` varchar(25) DEFAULT NULL,
+  `filesize` decimal(15,0) DEFAULT NULL,
+  `md5` varchar(32) DEFAULT NULL,
+  `upload_date` date NOT NULL,
+  PRIMARY KEY (`video_id`),
+  KEY `owner_id` (`owner_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=36 ;
+
+--
+-- Dumping data for table `VIDEO_Upload_data`
+--
+
+INSERT INTO `VIDEO_Upload_data` (`video_id`, `unique_id`, `owner_id`, `title`, `description`, `visibility`, `mime_type`, `filesize`, `md5`, `upload_date`) VALUES
+(1, 'P54C60YL', 1, 'blackbox.sql', 'asdfadsfdasf', NULL, 'text/x-sql', '5781', NULL, '0000-00-00'),
+(2, '7wgdej', 1, 'user-user_password.bin', 'sadfadsfads', NULL, 'application/octet-stream', '44', NULL, '0000-00-00'),
+(3, '0', 1, 'jquery-gmap3-4.1.zip', '', NULL, 'application/zip', '100052', NULL, '0000-00-00'),
+(4, 'gbxh4w', 1, 'blackbox.sql', '', NULL, 'text/x-sql', '5781', NULL, '0000-00-00'),
+(5, 'b85f2a56997023a', 1, 'blackbox.sql', '', NULL, 'text/x-sql', '5781', NULL, '0000-00-00'),
+(6, '4d175ada5beb', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', NULL, '0000-00-00'),
+(7, 'bbf6b9d7', 1, 'jquery-gmap3-4.1.zip', '', NULL, 'application/zip', '100052', NULL, '0000-00-00'),
+(8, '7df38a81', 1, 'blackbox.sql', '', NULL, 'text/x-sql', '5781', NULL, '0000-00-00'),
+(9, '5e06071e', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(10, 'b87ba0aa', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(11, 'c4365f5c', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(12, '02c32825', 1, 'user-user_password.bin', '', NULL, 'application/octet-stream', '44', '72d7d1b9a61a2550c52bb9bdb878431b', '0000-00-00'),
+(13, 'a50b33c7', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(14, 'a69fad53', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(15, 'cb09d7ab', 1, 'fentie-netbeans-colors-so', '', NULL, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(16, 'b89dc6e6', 1, 'blackbox.sql', 'I like turtles', 1, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(17, '2f6ee8b4', 1, 'fentie-netbeans-colors-so', 'asdfadsf', 0, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(18, '139f744b', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(19, '617039b2', 1, 'user-user_password.bin', '', 0, 'application/octet-stream', '44', NULL, '0000-00-00'),
+(20, 'ee6c21a8', 1, 'user-user_password (1).bi', '', 0, 'application/octet-stream', '44', 'ef28d37ba6b18ed869a680b3909aadd1', '0000-00-00'),
+(21, '1d9559aa', 1, 'fentie-netbeans-colors-so', '', 0, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(22, '206e5a80', 1, 'user-user_password (1).bi', '', 0, 'application/octet-stream', '44', 'ef28d37ba6b18ed869a680b3909aadd1', '0000-00-00'),
+(23, '471ba1c2', 1, 'PHPWord_0.6.2_Beta.zip', '', 0, 'application/zip', '178409', 'd1eb3326d5db259a9555235eae0cfa74', '0000-00-00'),
+(24, '759e0149', 1, 'fentie-netbeans-colors-so', '', 0, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(25, 'a4994d06', 1, 'fentie-netbeans-colors-so', '', 0, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(26, '26979031', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(27, '18db3c01', 1, 'user-user_password.bin', '', 0, 'application/octet-stream', '44', '72d7d1b9a61a2550c52bb9bdb878431b', '0000-00-00'),
+(28, '8bedff89', 1, 'fentie-netbeans-colors-so', '', 0, 'application/zip', '73175', '6f2034b640c307ccfbdde074165a678a', '0000-00-00'),
+(29, '2e519a3a', 1, 'jquery-gmap3-4.1.zip', '', 0, 'application/zip', '100052', '36f99f8d76911c99fcd4c6f9da3bd7aa', '0000-00-00'),
+(30, 'c038efa4', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(31, '7207cc49', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(32, 'c3b7983e', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(33, '4e111964', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '0000-00-00'),
+(34, 'e17dbd40', 1, 'user-user_password (1).bi', 'Ahhhh yess\n\n\nThings go here...', 1, 'application/octet-stream', '44', NULL, '0000-00-00'),
+(35, '6aa4f63a', 1, 'blackbox.sql', '', 0, 'text/x-sql', '5781', '34d4aff7c7180176b4d8ec2d49817468', '2012-07-30');
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `VIDEO_Category_map`
+--
+ALTER TABLE `VIDEO_Category_map`
+  ADD CONSTRAINT `VIDEO_Category_map_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `VIDEO_Upload_data` (`video_id`),
+  ADD CONSTRAINT `VIDEO_Category_map_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `META_Category` (`category_id`);
+
+--
+-- Constraints for table `VIDEO_Premissions_map`
+--
+ALTER TABLE `VIDEO_Premissions_map`
+  ADD CONSTRAINT `VIDEO_Premissions_map_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `VIDEO_Upload_data` (`video_id`),
+  ADD CONSTRAINT `VIDEO_Premissions_map_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `AUTH_Users` (`user_id`);
+
+--
+-- Constraints for table `VIDEO_Upload_data`
+--
+ALTER TABLE `VIDEO_Upload_data`
+  ADD CONSTRAINT `VIDEO_Upload_data_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `AUTH_Users` (`user_id`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
