@@ -44,6 +44,12 @@ $app->get('/', function() use ($app) {
 	}
 });
 
+$authenticate = function() use ($app) {
+	if(!AuthenticationController::checkLogin()) {
+		return redirect('/login');
+	}
+};
+
 /*********************/
 /* Login Features
 /*********************/
@@ -112,21 +118,18 @@ $app->post('/register', function() use ($app){
 /* Uploading
 /*********************/
 
-$app->get('/upload', function() use ($app) {
+$app->get('/upload', $authenticate, function() use ($app) {
 	$app->flashKeep();
-	if(!AuthenticationController::checkLogin()){
-		return redirect('/login');
-	}
-	else {
 		render('upload.html.tpl', array(), 'upload');
-	}
+	
 });
 
 
 /*********************/
 /* Video Management
 /*********************/
-$app->get('/videos(/:category_id)', function($category_id=-1) use ($app) {
+$app->get('/videos(/:category_id)', $authenticate, function($category_id=-1) use ($app) {
+
 	$categories = VideoController::getAllCategories();
 	$totalVideoCount = VideoController::getTotalVideoCount();
 	$videos = array( 
@@ -183,7 +186,8 @@ $app->get('/videos(/:category_id)', function($category_id=-1) use ($app) {
 	render('videos.html.tpl', array('videos'=>$videos, 'categories'=>$categories, 'selectedCategory'=>$category_id, 'categoryName'=>$categoryName, 'totalVideoCount' => $totalVideoCount), 'videos');
 });
 
-$app->get('/my-videos', function() use ($app) {
+$app->get('/my-videos', $authenticate, function() use ($app) {
+
 	$videos = VideoController::getUserVideos(AuthenticationController::getCurrentUserID());
 	$videos = array( 
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),
@@ -195,7 +199,8 @@ $app->get('/my-videos', function() use ($app) {
 });
 
 
-$app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
+$app->get('/edit/:mode/:id', $authenticate, function($mode, $id) use ($app) {
+
 	$video = VideoController::getVideoMeta($id);
 	if($mode == "meta"){
 		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
@@ -215,14 +220,7 @@ $app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
 
 
 
-$app->post('/sync', function() use ($app) {
-
-	if(!AuthenticationController::checkLogin())
-	{
-		return redirect('/login');
-	}
-	else 
-	{
+$app->post('/sync', $authenticate, function() use ($app) {
 		if(!is_null($_POST['model']))
 		{
 			$data = json_decode($_POST['model']);
@@ -282,7 +280,6 @@ $app->post('/sync', function() use ($app) {
 		{
 			return false;
 		}
-	}
 });
 
 
