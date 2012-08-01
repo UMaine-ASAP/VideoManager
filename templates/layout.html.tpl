@@ -16,6 +16,7 @@
 		{% block header_extra %}{% endblock %}
 </head>
 	<body>
+		<!-- Navigation bar -->
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container" style="">
@@ -25,7 +26,9 @@
 					
 					<div class="nav-collapse collapse" style="height: 0px;">
 						<ul class="nav">
-							<li><a href="upload">Upload</a></li>
+							<li {% if flash['location'] == 'upload' %}class='active'{% endif %}><a href="{{flash['web_root']}}/upload">Upload</a></li>
+							<li {% if flash['location'] == 'videos' %}class='active'{% endif %}><a href="{{flash['web_root']}}/videos">Videos</a></li>
+
 						</ul>
 					</div>
 
@@ -38,9 +41,11 @@
 						</a>
 
 						<ul class="dropdown-menu">
-							<li><a href="videos">My Videos</a></li>
+							<!--
+							<li><a href="{{flash['web_root']}}/my-videos">My Profile and Videos</a></li>
+							-->
 							<li class="divider"></li>
-							<li><a href="logout">Sign Out</a></li>
+							<li><a href="{{flash['web_root']}}/logout">Sign Out</a></li>
 						</ul>
 
 						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
