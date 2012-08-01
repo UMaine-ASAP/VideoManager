@@ -22,17 +22,17 @@
 				<div class="container" style="">
 
 
-				<a class="brand" href="#">Marcel TV</a>
+				<a class="brand">Marcel TV Uploader</a>
+				{% if flash['userData']['user_id'] %}
 					
 					<div class="nav-collapse collapse" style="height: 0px;">
 						<ul class="nav">
 							<li {% if flash['location'] == 'upload' %}class='active'{% endif %}><a href="{{flash['web_root']}}/upload">Upload</a></li>
-							<li {% if flash['location'] == 'videos' %}class='active'{% endif %}><a href="{{flash['web_root']}}/videos">Videos</a></li>
+							<li {% if flash['location'] == 'videos' %}class='active'{% endif %}><a href="{{flash['web_root']}}/videos">Manage Videos</a></li>
 
 						</ul>
 					</div>
 
-				{% if flash['userData']['user_id'] %}
 					<div class="btn-group pull-right">
 						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 							<i class="icon-user"></i>
@@ -43,8 +43,9 @@
 						<ul class="dropdown-menu">
 							<!--
 							<li><a href="{{flash['web_root']}}/my-videos">My Profile and Videos</a></li>
-							-->
 							<li class="divider"></li>
+							-->
+
 							<li><a href="{{flash['web_root']}}/logout">Sign Out</a></li>
 						</ul>
 
