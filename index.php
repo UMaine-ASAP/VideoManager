@@ -5,37 +5,50 @@ require_once('controllers/authentication.php');
 require_once('controllers/users.php');
 require_once('controllers/video.php');
 
+
 require_once('libraries/helpers.php');
 require_once('libraries/Slim/Slim.php');
+require_once('libraries/Views/TwigView.php');
 
-$app = new Slim();
+TwigView::$twigDirectory = __DIR__ . '/libraries/Twig';
 
+$app = new Slim(array(
+	'view' => new TwigView
+	));
+
+/**
+ *  Render
+ * 
+ *  Renders the template with given data and global data
+ */
+function render($templateName, $data) {
+	// Set special global values for every template
+	$userData = UserController::getUserDetails(AuthenticationController::GetCurrentUserID());
+	
+	$GLOBALS['app']->flashNow('userData', $userData);
+	$GLOBALS['app']->flashNow('web_root', $GLOBALS['web_root']);
+
+	// Render
+	$GLOBALS['app']->render($templateName, $data);
+}
+
+/** Root directory **/
 $app->get('/', function() use ($app) {
+	$app->flashKeep();
 	if(!AuthenticationController::checkLogin()){
 		return redirect('/login');
 	}
 	else{
-		include('templates/upload.php');
+		$app->redirect('/upload');
 	}
 });
 
-$app->get('/upload', function() use ($app) {
-	if(!AuthenticationController::checkLogin()){
-		return redirect('/login');
-	}
-	else {
-		include('templates/upload.php');
-	}
-});
+/*********************/
+/* Login Features
+/*********************/
 
-$app->get('/logout', function() use ($app) {
-	AuthenticationController::logout();
-	$app->flash('header', 'You have been successfully logged out.');
-	return redirect('/login');
-});
-
-$app->get('/login', function() {
-	include('templates/login.php');
+$app->get('/login', function() use ($app) {
+	render('login.html.tpl', array());
 });
 
 $app->post('/login', function() use ($app){
@@ -49,6 +62,12 @@ $app->post('/login', function() use ($app){
 		$app->flash('error', 'Username or password was incorrect.');
 		return redirect('/login');
 	}
+});
+
+$app->get('/logout', function() use ($app) {
+	AuthenticationController::logout();
+	$app->flash('header', 'You have been successfully logged out.');
+	return redirect('/login');
 });
 
 $app->post('/register', function() use ($app){
@@ -84,6 +103,55 @@ $app->post('/register', function() use ($app){
 	}
 
 });
+
+/*********************/
+/* Uploading
+/*********************/
+
+$app->get('/upload', function() use ($app) {
+	$app->flashKeep();
+	if(!AuthenticationController::checkLogin()){
+		return redirect('/login');
+	}
+	else {
+		render('upload.html.tpl', array());
+	}
+});
+
+
+/*********************/
+/* Video Management
+/*********************/
+$app->get('/videos', function() use ($app) {
+	$videos = VideoController::getUserVideos(AuthenticationController::getCurrentUserID());
+	$videos = array( 
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),								
+				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'));
+
+	render('videos.html.tpl', array('videos'=>$videos));
+});
+
+
+$app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
+	//VideoController::getVideoMeta($id);
+	if($mode == "meta"){
+		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
+			render('editMeta.html.tpl');
+		}
+		else {
+			$app->flash('error', 'You do not have premission to edit that video');
+			return redirect ('/videos');
+		}
+	}
+	else {
+		$app->flash('error', 'Invalid Edit Mode');
+		return redirect ('/videos');
+	}
+});
+
+
 
 $app->post('/sync', function() use ($app) {
 
@@ -155,26 +223,5 @@ $app->post('/sync', function() use ($app) {
 	}
 });
 
-$app->get('/videos', function() use ($app) {
-	include('templates/videos.php');
-});
-
-$app->get('/edit/:mode/:id', function($mode, $id) use ($app) {
-	if($mode == "meta"){
-		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
-			include('templates/editMeta.php');
-		}
-		else {
-			$app->flash('error', 'You do not have premission to edit that video');
-			return redirect ('/videos');
-		}
-	}
-	else {
-		$app->flash('error', 'Invalid Edit Mode');
-		return redirect ('/videos');
-	}
-});
 
 $app->run();
-
-?>
