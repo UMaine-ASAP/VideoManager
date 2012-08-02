@@ -220,7 +220,14 @@ $app->get('/edit/:mode/:id', $authenticate, function($mode, $id) use ($app) {
 
 
 
-$app->post('/sync', $authenticate, function() use ($app) {
+$app->post('/sync', function() use ($app) {
+
+	if(!AuthenticationController::checkLogin())
+	{
+		return redirect('/login');
+	}
+	else 
+	{
 		if(!is_null($_POST['model']))
 		{
 			$data = json_decode($_POST['model']);
@@ -228,7 +235,7 @@ $app->post('/sync', $authenticate, function() use ($app) {
 			{
 				$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
 		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		    	$input = array('unique_id' => substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size, 'visibility' => $data->visibility);
+		    	$input = array('unique_id' => $response['unique_id'] = substr(md5(rand(0, 1000000)), 0, 8), 'user_id' => AuthenticationController::getCurrentUserID(), 'title' => $data->title, 'description' => $data->description, 'mime_type' => $data->type, 'filesize' => $data->size, 'visibility' => $data->visibility);
 
 		    	$statement = $dbh->prepare("INSERT INTO VIDEO_Upload_data (unique_id, owner_id, title, description, visibility, mime_type, filesize, upload_date) VALUES (:unique_id, :user_id, :title, :description, :visibility, :mime_type, :filesize, NOW())");
 		    	$statement->execute($input);
@@ -280,6 +287,7 @@ $app->post('/sync', $authenticate, function() use ($app) {
 		{
 			return false;
 		}
+	}
 });
 
 

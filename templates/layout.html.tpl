@@ -6,6 +6,7 @@
 		<link href="{{flash['web_root']}}/libraries/marceltv.css" rel="stylesheet">
 		<link href="{{flash['web_root']}}/libraries/select2.css" rel="stylesheet">
 		<script src="{{flash['web_root']}}/js/select2.js" rel="stylesheet"></script>
+		 <script src="http://localhost:8080/socket.io/socket.io.js"></script>
 
 		<style type="text/css">
 			body {
@@ -66,7 +67,6 @@
 
 
 <!--Scripts that are dependent on the DOM-->
-	<script src="{{flash['web_root']}}/js/jquery.js"></script>
 	<script src="{{flash['web_root']}}/js/underscore.js"></script>
 	<script src="{{flash['web_root']}}/js/backbone.js"></script>
 	<script src="{{flash['web_root']}}/js/upload.js"></script>

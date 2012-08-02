@@ -5,7 +5,8 @@ var app = require('http').createServer(handler)
   , util = require('util')
   , Files = {}
   , mysql = require('mysql')
-  , crypto = require('crypto');
+  , crypto = require('crypto')
+  , metaLib = require('fluent-ffmpeg').Metadata;;
 
 
 //Setup all of our connections
@@ -92,8 +93,7 @@ io.sockets.on('connection', function (socket) {
 					
 
 					var inp = fs.createReadStream("Temp/" + Name);
-					
-					var md5sum = crypto.createHash('md5')
+					var md5sum = crypto.createHash('md5');
 					
 					inp.on('data', function(d){
 						md5sum.update(d);
@@ -103,26 +103,36 @@ io.sockets.on('connection', function (socket) {
 						Files[Name]["FileMD5"] = md5sum.digest('hex');
 					});
 
+					var metaObject = new metaLib('Temp/' + Name);
+						metaObject.get(function(metadata, err) {
+						  Files[Name]['Duration'] = metadata['durationsec'];
+					});
 
-					var out = fs.createWriteStream("Video/" + Name);
+					var out = fs.createWriteStream("/srv/src/marcel2_orig/" + Name);
 					util.pump(inp, out, function(){
-
-						var sql = "UPDATE VIDEO_Upload_data SET md5 = ? WHERE video_id = ?";
-						database.query(sql, [Files[Name]['FileMD5'], Files[Name]['FileID']], function(err, results){
-							if(err){
-								console.log(err);
-							}
-							else {
-								console.log(results);
-							}
-						});
-
-					
-
+						
 						fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
-							exec("ffmpeg -i Video/" + Name  + " -ss 01:30 -r 1 -an -vframes 1 -f mjpeg Video/" + Name  + ".jpg", function(err){
 								socket.emit('Done', {'Image' : 'Video/' + Name + '.jpg', 'id': Files[Name]["FileID"]});
-							});
+
+								var sql = "UPDATE VIDEO_Upload_data SET md5 = ?, duration = ? WHERE video_id = ?";
+								database.query(sql, [Files[Name]['FileMD5'], Files[Name]['Duration'], Files[Name]['FileID']], function(err, results){
+									if(err){
+										console.log(err);
+									}
+									else {
+										console.log(results);
+									}
+								});
+
+								var sql = "INSERT INTO CONVERSION_Progress (video_id, toConvert) VALUES (?, 1)";
+								database.query(sql, [Files[Name]['FileID']], function(err, results){
+									if(err){
+										console.log(err);
+									}
+									else {
+										console.log(results);
+									}
+								});
 						});
 					});
 				});
@@ -130,14 +140,14 @@ io.sockets.on('connection', function (socket) {
 			else if(Files[Name]['Data'].length > 104857600){ //If the Data Buffer reaches 10MB
 				fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
 					Files[Name]['Data'] = ""; //Reset The Buffer
-					var Place = Files[Name]['Downloaded'] / 10485760;
+					var Place = Files[Name]['Downloaded'] / 524288;
 					var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
 					socket.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
 				});
 			}
 			else
 			{
-				var Place = Files[Name]['Downloaded'] / 10485760;
+				var Place = Files[Name]['Downloaded'] / 524288;
 				var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
 				socket.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
 			}
