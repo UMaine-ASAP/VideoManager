@@ -6,6 +6,12 @@
 		top: 0;
 		right: 0;
 	}
+
+	.video_thumbnail img {
+		width: 180px;
+		height: 100px;
+	}
+
 	</style>
 {% endblock %}
 
@@ -38,7 +44,7 @@
 						<div class="video_list">
 
 							<div class="video_thumbnail">
-								<img src="http://placekitten.com/180/100">
+								<img src="{{thumbnail_dir}}/{{video.id}}.jpg">
 							</div>
 
 							<div class="video_info">

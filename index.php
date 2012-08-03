@@ -195,7 +195,7 @@ $app->get('/my-videos', $authenticate, function() use ($app) {
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'),								
 				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012'));
 
-	render('my-videos.html.tpl', array('videos'=>$videos));
+	render('my-videos.html.tpl', array('videos'=>$videos, 'thumbnail_dir'=>$GLOBALS['thumbnail_dir']));
 });
 
 

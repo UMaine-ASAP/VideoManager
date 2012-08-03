@@ -74,6 +74,11 @@
 		width: 180px;
 	}
 
+	.video_thumbnail img {
+		width: 180px;
+		height: 100px;
+	}
+
 	#video_info {
 
 		width: 350px;
@@ -185,8 +190,8 @@ $(document).ready( function() {
 <button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">x</button>
 							{% endif %}
 						</header>
-							<div class='group' id="video_thumbnail">
-								<img src="http://placekitten.com/180/100">
+							<div class='group video_thumbnail'>
+								<img src="{{thumbnail_dir}}/{{video.id}}.jpg">
 							</div>
 
 							<div class='group' id="video_info">

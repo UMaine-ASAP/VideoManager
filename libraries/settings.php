@@ -8,4 +8,4 @@ $PASSWORD = "";
 
 
 $web_root = "/experiments"
-?>
+$thumbnail_dir = "/thumbnails";
