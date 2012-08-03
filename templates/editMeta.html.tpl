@@ -1,4 +1,76 @@
 {% extends 'layout.html.tpl' %}
+{% block header_extra %}
+<script>
+$(document).ready( function() {
+	$('#save_changes').click( function() {
+		var videoData = {
+			title: $('#title').val(),
+			description: $('#description').val(),
+			visibility: 1,
+			category: 'test'
+		};
+
+		$.ajax({
+			url: '{{flash['web_root']}}/editVideo/{{video.video_id}}',
+			type: 'POST',
+			data: 'videoData=' + JSON.stringify(videoData),
+			success: function(data) {
+				if(data != '') {
+					alert(data);
+				}
+			}
+		});
+
+	});
+
+	$('#remove_video').click( function() {
+
+		$.ajax({
+			url: '{{flash['web_root']}}/deleteVideo/{{video.video_id}}',
+			method: 'POST',
+			success: function(data) {
+
+			}
+		});
+
+	});
+
+
+	function format_category(category){
+		if(category.id[0] == '-1'){
+			return category.text + "  <span class=\"label label-warning\" style=\"display: inline;\">New</span>";
+		}
+		else {
+			return category.text;
+		}
+	}
+
+
+	$("#category_select").select2({
+		multiple: false,
+		ajax: {
+			url: WEB_ROOT + "/findCategoriesLike",
+			type: 'get',
+			dataType: 'json',
+			data: function (term, page) {
+				return {
+					q: term,
+					limit: 10,
+				};
+			},
+			results: function (data, page) {
+				return {results: data}
+			}
+		},
+		formatResult: format_category,
+		formatSelection: format_category,
+	});
+
+});
+
+
+</script>
+{% endblock %}
 {% block content%}
 <div class="container">
 			<h2>Editing <span style='font-weight: normal;'>{{video.title}}</span></h2>
@@ -22,8 +94,8 @@
 					</form>
 				</div>
 				<div style="position: relative; float: left; height: 100%; width: 40%;">
-					<button style="position: absolute; top: -54px; right: -10px;" id="remove" class="btn btn-danger">Delete Video</button>
-					<button id="queue" style="position: absolute; right: 120px; top: -54px;" class="btn btn-success">Save Changes</button>
+					<button style="position: absolute; top: -54px; right: 120px;" id="remove_video" class="btn btn-danger">Delete Video</button>
+					<button id="save_changes" style="position: absolute; right: -10px; top: -54px;" class="btn btn-success">Save Changes</button>
 					<form class="form-horizontal">
 						<div class="control-group">
 							<label class="control-label" for="private">Visibility</label>
@@ -34,12 +106,12 @@
 								</div>
 							</div>
 						</div>
-						<div class="control-group">
-							<label class="control-label" for="category">Category</label>
-							<div class="controls">
-								<input type="hidden" id="category">
+							<div class="control-group">
+								<label class="control-label" for="category">Category</label>
+								<div class="controls">
+									<input type="hidden" id="category_select" data-placeholder='{{video.category}}'/>
+								</div>
 							</div>
-						</div>
 					</form>
 				</div>
 				<div style='clear: both;'></div>

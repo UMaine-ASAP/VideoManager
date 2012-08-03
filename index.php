@@ -252,6 +252,43 @@ $app->post('/editVideo/:video_id', $authenticate, function($video_id) use ($app)
 
 });
 
+$app->get('/findCategoriesLike', $authenticate, function() use ($app) {
+	$category_start_name = $app->request()->params('q');
+
+	// Get categories starting with sent text
+	$data 		= array('query_string' => $category_start_name . '%');
+	$statement 	= "SELECT category_id as id, name as 'text' FROM META_Category WHERE name LIKE :query_string LIMIT 10";
+
+	$result 	= Database::query($statement, $data);
+		
+	if( $result === false) {
+		return false;
+	}
+
+	/** Output result **/
+
+	// If item already exists, send results
+	foreach($result as $value){
+		if($value['text'] == $category_start_name){
+			header('Content-type: application/json');
+			echo json_encode($result);
+			exit;
+		}
+	}
+
+	// Otherwise add category to front of array if not empty
+	if( $category_start_name != '' ) {
+		$queryArray['id'][0] = '-1';
+		$queryArray['id'][1] = $category_start_name;
+		$queryArray['text']  = $category_start_name;
+		array_unshift($result, $queryArray);
+	}
+
+	
+	header('Content-type: application/json');
+	echo json_encode($result);
+	
+});
 
 
 $app->post('/sync', $authenticate, function() use ($app) {

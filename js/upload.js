@@ -185,7 +185,8 @@
 				placeholder: {title: "Select a Category", id: ""},
 				minimumInputLength: 1,
 				ajax: {
-					url: "http://localhost/experiments/category_query.php",
+					url: WEB_ROOT + "/findCategoriesLike",
+					type: 'get',
 					dataType: 'json',
 					data: function (term, page) {
 						return {
