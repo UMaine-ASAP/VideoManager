@@ -1,5 +1,8 @@
 <html>
 <head>
+		<script>
+			var WEB_ROOT = '{{flash['web_root']}}';
+		</script>
 		<script src="{{flash['web_root']}}/js/jquery.js"></script>
 		<link href="{{flash['web_root']}}/bootstrap/css/bootstrapold.css" rel="stylesheet">
 		<link href="{{flash['web_root']}}/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">

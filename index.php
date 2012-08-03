@@ -1,6 +1,8 @@
 <?PHP
 session_start();
 
+require_once('libraries/settings.php');
+
 require_once('controllers/authentication.php');
 require_once('controllers/users.php');
 require_once('controllers/video.php');
@@ -9,6 +11,8 @@ require_once('controllers/video.php');
 require_once('libraries/helpers.php');
 require_once('libraries/Slim/Slim.php');
 require_once('libraries/Views/TwigView.php');
+
+require_once('libraries/database.php');
 
 TwigView::$twigDirectory = __DIR__ . '/libraries/Twig';
 
@@ -250,7 +254,7 @@ $app->post('/editVideo/:video_id', $authenticate, function($video_id) use ($app)
 
 
 
-$app->post('/sync', function() use ($app) {
+$app->post('/sync', $authenticate, function() use ($app) {
 
 	if(!AuthenticationController::checkLogin())
 	{
