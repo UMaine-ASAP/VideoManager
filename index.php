@@ -183,7 +183,7 @@ $app->get('/videos(/:category_id)', $authenticate, function($category_id=-1) use
 
 	}
 
-	render('videos.html.tpl', array('videos'=>$videos, 'categories'=>$categories, 'selectedCategory'=>$category_id, 'categoryName'=>$categoryName, 'totalVideoCount' => $totalVideoCount), 'videos');
+	render('videos.html.tpl', array('videos'=>$videos, 'categories'=>$categories, 'selectedCategory'=>$category_id, 'categoryName'=>$categoryName, 'totalVideoCount' => $totalVideoCount, 'thumbnail_dir'=>$GLOBALS['thumbnail_dir']), 'videos');
 });
 
 $app->get('/my-videos', $authenticate, function() use ($app) {
