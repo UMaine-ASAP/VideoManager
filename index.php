@@ -201,9 +201,9 @@ $app->get('/my-videos', $authenticate, function() use ($app) {
 
 $app->get('/edit/:mode/:id', $authenticate, function($mode, $id) use ($app) {
 
-	$video = VideoController::getVideoMeta($id);
 	if($mode == "meta"){
 		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
+			$video = VideoController::getVideoMeta($id);
 			render('editMeta.html.tpl', array('video'=>$video), 'videos' );
 		}
 		else {
