@@ -217,6 +217,36 @@ $app->get('/edit/:mode/:id', $authenticate, function($mode, $id) use ($app) {
 	}
 });
 
+// Add category
+$app->get('/addCategory/:name', $authenticate, function($name) use ($app) {
+
+	$query_string = "INSERT INTO META_Category (name) VALUES (:name)";
+	$data = array('name' => $name);
+
+	// Only add if array is empty
+	if( Database::query("SELECT name FROM META_Category WHERE name = :name", $data) == array() ) {
+		Database::query($query_string, $data);
+	}
+});
+
+// Edit Video
+$app->post('/editVideo/:video_id', $authenticate, function($video_id) use ($app) {
+
+	$video = VideoController::getVideoMeta($video_id);
+	if(VideoController::getVideoOwnerID($video_id) == AuthenticationController::getCurrentUserID()){
+		$videoData = json_decode( $app->request()->post('videoData') );
+		echo $videoData->title;
+			// 	title: 'test',
+			// description: 'lorem ipsum',
+			// visibility: 1,
+			// category: 'test'
+
+	}
+	else {
+		echo 'You do not have premission to edit that video';
+	}
+
+});
 
 
 

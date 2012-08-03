@@ -122,6 +122,22 @@
 		margin-top: 12px;
 	}
 	</style>
+<script>
+$(document).ready( function() {
+	$('#add-category').click( function() {
+		var categoryName = prompt("New Category Name:");
+		$.ajax({
+			type: 'get',
+			url: '{{flash['web_root']}}/addCategory/'+categoryName,
+//			data: 'name=' + categoryName,
+			success: function() {
+				location.reload();
+			}
+		});
+
+	});
+});
+</script>
 {% endblock %}
 
 {% block content %}
