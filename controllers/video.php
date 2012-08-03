@@ -2,40 +2,30 @@
 
 
 require_once('libraries/settings.php');
+
+// Libraries
+require_once('libraries/database.php');
+
+// Controllers
 require_once('authentication.php');
 
 class VideoController 
 {
 
 	static function getVideosInCategory($category_id = -1) {
-		if(AuthenticationController::checkLogin()){
-			try 
-	        {
-	        	$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
-	        	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	        	if( $category_id != -1) {
-	        		$data = array("category_id" => $category_id);
-		        	$statement = $dbh->prepare("SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id");
-		        	$statement->execute($data);
-	        	} else {
-	        		// Get all videos
-		        	$statement = $dbh->prepare("SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id");
-		        	$statement->execute();
-	        	} 
+		if( ! AuthenticationController::checkLogin()) return array();
 
-	        	$row = $statement->fetchAll();
+		// Return videos from a specific category
+	    if( $category_id != -1) {
+	    	$data = array("category_id" => $category_id);
+		   	$statement 	= "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
 
-	            return $row;
-			}
-			catch(PDOException $ex)
-			{
-				error_log($ex);
-				$dbh = null;
-				return false;
-			}
-
-			$dbh = null;
-		}		
+		   	return Database::query($statement, $data);
+	    } else {
+	      	// Get all videos
+		   	$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
+		   	return Database::query($statement);
+	    } 
 	}
 
 	static function getTotalVideoCount() {
@@ -65,11 +55,12 @@ class VideoController
 	static function getAllCategories() {
 
 		if(AuthenticationController::checkLogin()){
+
 			try 
 	        {
 	        	$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
 	        	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	        	$statement = $dbh->prepare("SELECT META_Category.category_id as id, META_Category.name as name, count(VCMap.video_id) as video_count FROM VIDEO_Category_map as VCmap LEFT JOIN META_Category ON VCmap.category_id=META_Category.category_id GROUP BY META_Category.category_id ORDER BY name DESC");
+	        	$statement = $dbh->prepare("SELECT META_Category.category_id as id, META_Category.name as name, count(VCMap.video_id) as video_count FROM VIDEO_Category_map as VCmap RIGHT JOIN META_Category ON VCmap.category_id=META_Category.category_id GROUP BY META_Category.category_id ORDER BY name ASC");
 	        	$statement->execute();
 
 	        	$row = $statement->fetchAll();
@@ -137,28 +128,13 @@ class VideoController
 			$dbh = null;
 	}
 
+	//TODO - Multple Category Support
 	static function getVideoMeta($video_id){
-		try 
-	        {
-	        	$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
-	        	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	        	$data = array("video_id" => $video_id);
+	    $data = array("video_id" => $video_id);
+	    $statement = "SELECT a.*, category.name as category FROM VIDEO_Upload_data a LEFT JOIN VIDEO_Category_map b ON a.video_id = b.video_id LEFT JOIN META_Category category ON b.category_id = category.category_id WHERE a.video_id = :video_id LIMIT 1";
 
-	        	//TODO - Multple Category Support
-	        	$statement = $dbh->prepare("SELECT a.*, b.category_id FROM VIDEO_Upload_data a LEFT JOIN VIDEO_Category_map b ON a.video_id = b.video_id WHERE a.video_id = :video_id LIMIT 1");
-	        	$statement->execute($data);
+	    $result = Database::query($statement, $data);
+	    return $result[0];
 
-	        	$row = $statement->fetch(PDO::FETCH_ASSOC);
-
-	            return $row;
-			}
-			catch(PDOException $ex)
-			{
-				error_log($ex);
-				$dbh = null;
-				return false;
-			}
-
-			$dbh = null;
 	}
 }
