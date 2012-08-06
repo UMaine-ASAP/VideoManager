@@ -87,8 +87,7 @@ $(document).ready( function() {
 						<div class="control-group">
 							<label class="control-label" for="description">Description</label>
 							<div class="controls">
-								<textarea id="description" style="width: 100%; height: 150px;"
-								{{video.description}}></textarea>
+								<textarea id="description" style="width: 100%; height: 150px;">{{video.description}}</textarea>
 							</div>
 						</div>
 					</form>

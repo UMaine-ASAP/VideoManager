@@ -81,10 +81,11 @@ $app->get('/logout', function() use ($app) {
 	return redirect('/login');
 });
 
-$app->post('/register', function() use ($app){
+$app->get('/register', function() use ($app){
 	$app->flash('error', 'Registration is currently disabled');
 	return redirect('/login');
 	exit(1);
+
 	if($_POST['username'] == "" || $_POST['password'] == "" || $_POST['email'] == "" || $_POST['first_name'] == "" || $_POST['last_name'] == "")
 	{
 		$app->flash('error', 'All fields are required.');
@@ -94,29 +95,20 @@ $app->post('/register', function() use ($app){
 	{
 		if($hash = AuthenticationController::createHash($_POST['password']))
 		{
-			try 
-		    {
-        		$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
-		    	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		    	$data = array('username' => $_POST['username'], 'password' => $hash, 'email' => $_POST['email'], 'first' => $_POST['first_name'], 'last' => $_POST['last_name']);
 
-		    	$statement = $dbh->prepare("INSERT INTO AUTH_Users (username, password, first, last, email) VALUES (:username, :password, :first, :last, :email)");
-		    	$statement->execute($data);
-			}
-			catch(PDOException $ex)
-			{
-				error_log($ex);
-				$dbh = null;
+		    $data = array('username' => $_POST['username'], 'password' => $hash, 'email' => $_POST['email'], 'first' => $_POST['first_name'], 'last' => $_POST['last_name']);
+		    $statement = "INSERT INTO AUTH_Users (username, password, first, last, email) VALUES (:username, :password, :first, :last, :email)";
+
+			$result = Database::query($statement, $data);
+			if( $result === false) {
 				return false;
 			}
-
-			$dbh = null;
-
 			return redirect('/');
 		}
 	}
 
 });
+
 
 /*********************/
 /* Uploading
@@ -136,37 +128,7 @@ $app->get('/videos(/:category_id)', $authenticate, function($category_id=-1) use
 
 	$categories = VideoController::getAllCategories();
 	$totalVideoCount = VideoController::getTotalVideoCount();
-	$videos = array( 
-				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
-				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
-				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),								
-				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
-				array('video_id'=>2, 'title'=>'Video 1', 'upload_date'=>'01/05/2012', 'length'=>'5:02', 'status'=>'visible', 'owner'=>'Test', 'description'=>'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'));
+
 
 	$videos = videoController::getVideosInCategory($category_id);
 
