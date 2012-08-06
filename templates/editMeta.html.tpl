@@ -101,8 +101,8 @@ $(document).ready( function() {
 							<label class="control-label" for="private">Visibility</label>
 							<div class="controls">
 								<div id="visibility" class="btn-group" data-toggle="buttons-radio">
-									<a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn {% if video.visibility == 1 %}active{% endif %}" value="0" data-original-title="">Public</a>
-									<a class="btn {% if video.visibility != 1 %}active{% endif %}" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1" data-original-title="">Private</a>
+									<a id="1" data-content="Determines if Video will be visible on MarcelTV" class="btn {% if video.visibility == 1 %}active{% endif %}" value="1" data-original-title="">Public</a>
+									<a class="btn {% if video.visibility != 1 %}active{% endif %}" data-content="Determines if Video will be visible on MarcelTV" id="0" value="0" data-original-title="">Private</a>
 								</div>
 							</div>
 						</div>
