@@ -21,6 +21,8 @@ $(document).ready( function() {
 			success: function(data) {
 				if(data != '') {
 					alert(data);
+				} else {
+					window.location = "{{ flash['web_root'] }}/videos";
 				}
 			}
 		});
@@ -33,7 +35,7 @@ $(document).ready( function() {
 			url: '{{flash['web_root']}}/deleteVideo/{{video.video_id}}',
 			method: 'POST',
 			success: function(data) {
-
+				window.location = "{{ flash['web_root'] }}/videos";
 			}
 		});
 
