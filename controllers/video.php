@@ -34,15 +34,31 @@ class VideoController
 
 		// Return videos from a specific category
 	    if( $category_id != -1) {
-	    	$data = array("category_id" => $category_id);
-		   	$statement 	= "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
+		$data 		= array("category_id" => $category_id);
+			$statement  = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
 
-		   	return Database::query($statement, $data);
-	    } else {
-	      	// Get all videos
-		   	$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
-		   	return Database::query($statement);
+			$videos = Database::query($statement, $data);
+
+	    } else { // Get all videos
+
+			$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
+
+			$videos = Database::query($statement);
 	    } 
+
+	    // Remap duration
+	    function durationSecondsToDurationStamp($video) {
+		$duration = $video['duration'];
+		$minutes = intVal($duration / 60);
+		$seconds = $duration % 60;
+
+		$video['duration'] = $minutes . ":" . $seconds;
+		return $video;
+	    }
+
+	    $videos = array_map('durationSecondsToDurationStamp', $videos);
+
+	    return $videos;
 	}
 
 	static function getTotalVideoCount() {
