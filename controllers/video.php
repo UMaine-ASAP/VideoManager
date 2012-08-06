@@ -12,6 +12,23 @@ require_once('authentication.php');
 class VideoController 
 {
 
+	// Returns id of new category or existing category
+	static function addCategory($name) {
+		$query_string = "INSERT INTO META_Category(name) VALUES (:name)";
+		$data = array('name' => $name);
+
+		// Only add if value doesn't exist is empty
+		if( Database::query("SELECT name FROM META_Category WHERE name = :name", $data) == array() ) {
+			Database::query($query_string, $data);
+		} else {
+			// Value already exists
+			$result = Database::query("SELECT category_id FROM META_Category WHERE name = :name", $data);
+			return $result[0]['category_id'];
+		}
+		$result = Database::query("SELECT category_id FROM META_Category WHERE name = :name", $data);
+		return $result[0]['category_id'];
+	}
+
 	static function getVideosInCategory($category_id = -1) {
 		if( ! AuthenticationController::checkLogin()) return array();
 
