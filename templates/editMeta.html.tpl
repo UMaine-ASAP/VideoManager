@@ -3,11 +3,15 @@
 <script>
 $(document).ready( function() {
 	$('#save_changes').click( function() {
+
+		var category_select = $("#category_select").select2("data");
+
 		var videoData = {
+			id: '{{video.video_id}}',
 			title: $('#title').val(),
 			description: $('#description').val(),
-			visibility: 1,
-			category: 'test'
+			visibility: $("#visibility").children('.active').attr("id"),
+			categoryData: JSON.stringify(category_select),
 		};
 
 		$.ajax({

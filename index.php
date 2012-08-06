@@ -85,7 +85,7 @@ $app->get('/register', function() use ($app){
 	$app->flash('error', 'Registration is currently disabled');
 	return redirect('/login');
 	exit(1);
-
+	
 	if($_POST['username'] == "" || $_POST['password'] == "" || $_POST['email'] == "" || $_POST['first_name'] == "" || $_POST['last_name'] == "")
 	{
 		$app->flash('error', 'All fields are required.');
@@ -194,11 +194,25 @@ $app->post('/editVideo/:video_id', $authenticate, function($video_id) use ($app)
 	$video = VideoController::getVideoMeta($video_id);
 	if(VideoController::getVideoOwnerID($video_id) == AuthenticationController::getCurrentUserID()){
 		$videoData = json_decode( $app->request()->post('videoData') );
-		echo $videoData->title;
-			// 	title: 'test',
-			// description: 'lorem ipsum',
-			// visibility: 1,
-			// category: 'test'
+
+		// id
+		$videoData->id = intVal($videoData->id);
+
+		// visibility
+		$isPublic = ($videoData->visibility == 1) ? True : False;
+
+		// Category
+		$category = json_decode($videoData->categoryData);
+		$categoryName = null;
+		if( ! is_null($category) ) {
+			if( $category->id == -1) {
+				//create new category
+				$category->id = videoController::addCategory( $category->text );
+			}
+			$categoryName = $category->text;
+		}
+		// Update data
+		videoController::updateVideo($videoData->id, $videoData->title, $videoData->description, $isPublic, $categoryName);
 
 	}
 	else {
