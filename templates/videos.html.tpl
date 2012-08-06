@@ -201,7 +201,7 @@ $(document).ready( function() {
 							<div class='group' id="video_stats">
 								<div class='field-value-set'>
 									<span class='field'>Duration</span>
-									<span class='value'>{{ video.length }}</span>
+									<span class='value'>{{ video.duration }}</span>
 								</div>
 								<div class='field-value-set'>
 									<span class='field'>Uploaded on</span>
