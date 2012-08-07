@@ -12,20 +12,53 @@ require_once('authentication.php');
 class VideoController 
 {
 
+	// Returns id of new category or existing category
+	static function addCategory($name) {
+		$query_string = "INSERT INTO META_Category(name) VALUES (:name)";
+		$data = array('name' => $name);
+	
+		// Only add if value doesn't exist is empty
+		if( Database::query("SELECT name FROM META_Category WHERE name = :name", $data) == array() ) {
+			Database::query($query_string, $data);
+		} else {
+			// Value already exists
+			$result = Database::query("SELECT category_id FROM META_Category WHERE name = :name", $data);
+			return $result[0]['category_id'];
+		}
+		$result = Database::query("SELECT category_id FROM META_Category WHERE name = :name", $data);
+		return $result[0]['category_id'];
+	}
+
 	static function getVideosInCategory($category_id = -1) {
 		if( ! AuthenticationController::checkLogin()) return array();
 
 		// Return videos from a specific category
 	    if( $category_id != -1) {
-	    	$data = array("category_id" => $category_id);
-		   	$statement 	= "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
+	    	$data 		= array("category_id" => $category_id);
+		   	$statement  = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
 
-		   	return Database::query($statement, $data);
-	    } else {
-	      	// Get all videos
-		   	$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.filesize as length, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
-		   	return Database::query($statement);
+		   	$videos = Database::query($statement, $data);
+
+	    } else { // Get all videos
+
+		   	$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
+
+		   	$videos = Database::query($statement);
 	    } 
+
+	    // Remap duration
+	    function durationSecondsToDurationStamp($video) {
+	    	$duration = $video['duration'];
+	    	$minutes = intVal($duration / 60);
+	    	$seconds = $duration % 60;
+
+	    	$video['duration'] = $minutes . ":" . $seconds;
+	    	return $video;
+	    }
+
+	    $videos = array_map('durationSecondsToDurationStamp', $videos);
+
+	    return $videos;
 	}
 
 	static function getTotalVideoCount() {
@@ -126,6 +159,43 @@ class VideoController
 			}
 
 			$dbh = null;
+	}
+
+	static function updateVideo($video_id, $title, $description, $isPublic, $categoryName) {
+		// Update video field
+		$data = array(	'title'			=> $title,
+						'description' 	=> $description,
+						'visibility'	=> (($isPublic) ? 1 : 0),
+						'video_id' 		=> $video_id, 
+						);
+
+		$statement = "UPDATE VIDEO_Upload_data SET title=:title, description=:description, visibility=:visibility WHERE video_id = :video_id ";
+		Database::query($statement, $data);
+
+		/* update video's category */
+		if( is_null($categoryName) ) return;
+
+		// Add category in case it's new
+		$categoryID = videoController::addCategory($categoryName);
+		
+
+
+		// Set video's category
+		if( ! is_null($categoryID) ) {
+			$data = array('category_id' => $categoryID, 'video_id' => $video_id);
+
+			// Is there already a category set for this video?
+			if( Database::query("SELECT * FROM VIDEO_Category_map WHERE video_id = :video_id", array('video_id'=>$video_id)) != array() ) {
+				Database::query("UPDATE VIDEO_Category_map SET category_id = :category_id WHERE video_id = :video_id", $data);
+			} else {
+				// Add Category
+				Database::query("INSERT INTO VIDEO_Category_map (video_id, category_id) VALUES (:video_id, :category_id) ", $data);
+			}
+		}
+	}
+
+	static function deleteVideo($video_id) {
+
 	}
 
 	//TODO - Multple Category Support

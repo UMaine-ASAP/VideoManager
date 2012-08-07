@@ -3,11 +3,15 @@
 <script>
 $(document).ready( function() {
 	$('#save_changes').click( function() {
+
+		var category_select = $("#category_select").select2("data");
+
 		var videoData = {
+			id: '{{video.video_id}}',
 			title: $('#title').val(),
 			description: $('#description').val(),
-			visibility: 1,
-			category: 'test'
+			visibility: $("#visibility").children('.active').attr("id"),
+			categoryData: JSON.stringify(category_select),
 		};
 
 		$.ajax({
@@ -17,6 +21,8 @@ $(document).ready( function() {
 			success: function(data) {
 				if(data != '') {
 					alert(data);
+				} else {
+					window.location = "{{ flash['web_root'] }}/videos";
 				}
 			}
 		});
@@ -29,7 +35,7 @@ $(document).ready( function() {
 			url: '{{flash['web_root']}}/deleteVideo/{{video.video_id}}',
 			method: 'POST',
 			success: function(data) {
-
+				window.location = "{{ flash['web_root'] }}/videos";
 			}
 		});
 
@@ -87,8 +93,7 @@ $(document).ready( function() {
 						<div class="control-group">
 							<label class="control-label" for="description">Description</label>
 							<div class="controls">
-								<textarea id="description" style="width: 100%; height: 150px;"
-								{{video.description}}></textarea>
+								<textarea id="description" style="width: 100%; height: 150px;">{{video.description}}</textarea>
 							</div>
 						</div>
 					</form>
@@ -101,8 +106,8 @@ $(document).ready( function() {
 							<label class="control-label" for="private">Visibility</label>
 							<div class="controls">
 								<div id="visibility" class="btn-group" data-toggle="buttons-radio">
-									<a id="0" data-content="Determines if Video will be visible on MarcelTV" class="btn {% if video.visibility == 1 %}active{% endif %}" value="0" data-original-title="">Public</a>
-									<a class="btn {% if video.visibility != 1 %}active{% endif %}" data-content="Determines if Video will be visible on MarcelTV" id="1" value="1" data-original-title="">Private</a>
+									<a id="1" data-content="Determines if Video will be visible on MarcelTV" class="btn {% if video.visibility == 1 %}active{% endif %}" value="1" data-original-title="">Public</a>
+									<a class="btn {% if video.visibility != 1 %}active{% endif %}" data-content="Determines if Video will be visible on MarcelTV" id="0" value="0" data-original-title="">Private</a>
 								</div>
 							</div>
 						</div>
