@@ -81,11 +81,12 @@ $app->get('/logout', function() use ($app) {
 	return redirect('/login');
 });
 
-$app->get('/register', function() use ($app){
+$app->post('/register', function() use ($app){
+
 	$app->flash('error', 'Registration is currently disabled');
 	return redirect('/login');
 	exit(1);
-	
+
 	if($_POST['username'] == "" || $_POST['password'] == "" || $_POST['email'] == "" || $_POST['first_name'] == "" || $_POST['last_name'] == "")
 	{
 		$app->flash('error', 'All fields are required.');
@@ -148,7 +149,7 @@ $app->get('/videos(/:category_id)', $authenticate, function($category_id=-1) use
 		}
 
 	}
-
+	
 	render('videos.html.tpl', array('videos'=>$videos, 'categories'=>$categories, 'selectedCategory'=>$category_id, 'categoryName'=>$categoryName, 'totalVideoCount' => $totalVideoCount, 'thumbnail_dir'=>$GLOBALS['thumbnail_dir']), 'videos');
 });
 

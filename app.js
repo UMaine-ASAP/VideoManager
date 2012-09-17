@@ -19,6 +19,7 @@ var database = mysql.createConnection({
 	database: 'blackbox',
 });
 
+
 database.connect(function(err) {
 	if(err){
 		console.log(err);
@@ -27,6 +28,26 @@ database.connect(function(err) {
 		console.log("Database Connection: Success");
 	}
 });
+
+function handleDisconnect(connection) {
+  connection.on('error', function(err) {
+    if (!err.fatal) {
+      return;
+    }
+
+    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+      throw err;
+    }
+
+    console.log('Re-connecting lost connection: ' + err.stack);
+
+    connection = mysql.createConnection(connection.config);
+    handleDisconnect(connection);
+    connection.connect();
+  });
+}
+
+handleDisconnect(database);
 
 
 function handler (req, res) {
@@ -113,6 +134,7 @@ io.sockets.on('connection', function (socket) {
 						
 						fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
 								socket.emit('Done', {'Image' : 'Video/' + Name + '.jpg', 'id': Files[Name]["FileID"]});
+
 
 								var sql = "UPDATE VIDEO_Upload_data SET md5 = ?, duration = ? WHERE video_id = ?";
 								database.query(sql, [Files[Name]['FileMD5'], Files[Name]['Duration'], Files[Name]['FileID']], function(err, results){

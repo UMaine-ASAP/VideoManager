@@ -35,13 +35,13 @@ class VideoController
 		// Return videos from a specific category
 	    if( $category_id != -1) {
 	    	$data 		= array("category_id" => $category_id);
-		   	$statement  = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
+		   	$statement  = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
 
 		   	$videos = Database::query($statement, $data);
 
 	    } else { // Get all videos
 
-		   	$statement = "SELECT videos.video_id as id, videos.filesize as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
+		   	$statement = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
 
 		   	$videos = Database::query($statement);
 	    } 
@@ -86,29 +86,9 @@ class VideoController
 	}
 
 	static function getAllCategories() {
-
-		if(AuthenticationController::checkLogin()){
-
-			try 
-	        {
-	        	$dbh = new PDO('mysql:host=' . $GLOBALS['HOST'] . ';dbname='. $GLOBALS['DATABASE'], $GLOBALS['USERNAME'], $GLOBALS['PASSWORD']);
-	        	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	        	$statement = $dbh->prepare("SELECT META_Category.category_id as id, META_Category.name as name, count(VCMap.video_id) as video_count FROM VIDEO_Category_map as VCmap RIGHT JOIN META_Category ON VCmap.category_id=META_Category.category_id GROUP BY META_Category.category_id ORDER BY name ASC");
-	        	$statement->execute();
-
-	        	$row = $statement->fetchAll();
-
-	            return $row;
-			}
-			catch(PDOException $ex)
-			{
-				error_log($ex);
-				$dbh = null;
-				return false;
-			}
-
-			$dbh = null;
-		}
+		if( AuthenticationController::checkLogin() ){
+	      	return Database::query("SELECT META_Category.category_id as id, META_Category.name as name, count(video_id) as video_count FROM VIDEO_Category_map as VCmap RIGHT JOIN META_Category ON VCmap.category_id=META_Category.category_id GROUP BY META_Category.category_id ORDER BY name ASC");
+	    }
 	}
 
 	static function getUserVideos($user_id){
@@ -171,7 +151,17 @@ class VideoController
 
 		$statement = "UPDATE VIDEO_Upload_data SET title=:title, description=:description, visibility=:visibility WHERE video_id = :video_id ";
 		Database::query($statement, $data);
-
+		
+		/* Deal with Marcel */
+		$conversion_data = array('video_id' => $video_id);
+		if($isPublic) {
+			$conversion = "UPDATE CONVERSION_Progress SET toTransfer = 1 WHERE video_id=:video_id";
+		}
+		else {
+			$conversion = "UPDATE CONVERSION_Progress SET toRemove = 0 WHERE video_id = :video_id";
+		}
+		Database::query($conversion, $conversion_data);
+		
 		/* update video's category */
 		if( is_null($categoryName) ) return;
 

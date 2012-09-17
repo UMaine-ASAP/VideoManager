@@ -191,7 +191,7 @@ $(document).ready( function() {
 							{% endif %}
 						</header>
 							<div class='group video_thumbnail'>
-								<img src="{{thumbnail_dir}}/{{video.id}}.jpg">
+								<img src="view/{{video.thumbnail}}/{{video.thumbnail}}.jpg">
 							</div>
 
 							<div class='group' id="video_info">

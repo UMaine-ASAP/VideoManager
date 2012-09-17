@@ -7,5 +7,5 @@ $USERNAME = "blackbox";
 $PASSWORD = "";
 
 
-$web_root = "/experiments"
-$thumbnail_dir = "/thumbnails";
+$web_root = "/marcel";
+$thumbnail_dir = "/marcel/thumbnails";
