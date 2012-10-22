@@ -178,6 +178,19 @@ $app->get('/edit/:mode/:id', $authenticate, function($mode, $id) use ($app) {
 			return redirect ('/videos');
 		}
 	}
+	elseif($mode == "remove"){
+		if(VideoController::getVideoOwnerID($id) == AuthenticationController::getCurrentUserID()){
+			VideoController::removeVideo($id);
+
+			$app->flash('success', 'Video Successfully Removed!');
+			return redirect ('/videos');
+		}
+		else
+		{
+			$app->flash('error', 'You do not have premission to remove that video');
+			return redirect ('/videos');
+		}
+	}
 	else {
 		$app->flash('error', 'Invalid Edit Mode');
 		return redirect ('/videos');

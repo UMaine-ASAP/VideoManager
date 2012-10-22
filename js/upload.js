@@ -168,10 +168,10 @@
 			var string = '<td style="width: 60%;"><h4>' + this.model.get('title') + '</h4><br>';
 			string += '<form class="form-horizontal"><div class="control-group"><label class="control-label" for="title">Change Title</label><div class="controls"><input type="text" class="input-xlarge" id="title" value="'+this.model.get('title')+'"></div></div>';
 			string += '<div class="control-group"><label class="control-label" for="description">Description</label><div class="controls"><textarea id="description" style="width: 100%; height: 150px;"></textarea></div></div></form>';
-			string += '</td><td style="position: relative;">';
-			string += '<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px;" class=\"btn btn-success\">Queue</button>';
+			string += '</td><td><div style="position: relative;">';
+			string += '<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">&times;</button><button id=\"queue\" style="position: absolute; right: 30px; top: 5px; z-index: 800;" class=\"btn btn-success\">Queue</button>';
 			string += '<form style="margin-top: 30px;" class="form-horizontal"><div class="control-group"><label class="control-label" for="private">Visibility</label><div class="controls"><div id="visibility" class="btn-group" data-toggle="buttons-radio" ><a id="1" data-content="You must first upload the video before you can send it to MarcelTV" class="btn disabled" value="1">Public</a><a class="btn active disabled" data-content="You must first upload the video before you can send it to MarcelTV" id="0" value="0">Private</a></div></div></div>';
-			string += '<div class="control-group"><label class="control-label" for="category">Category</label><div class="controls"><input type=\"hidden\" id=\"category_select\"></input></div></div></form></td></table>';
+			string += '<div class="control-group"><label class="control-label" for="category">Category</label><div class="controls"><input type=\"hidden\" id=\"category_select\"></input></div></div></form></div></td></table>';
 			//$(this.el).html('<td>' + this.model.get('selector') +'</td><td>Title: <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><p><small>Type: ' + this.model.get('type') + '</small></p></td><td><div class=\"progress style=\"width: 200px; margin-bottom: 8px;\"><div class=\"bar\" style=\"width: ' + this.model.get('progress') + '%\"></div></div><p><small>Size: ' + Math.floor(this.model.get('size')/1048576) + ' MB</small></p></td>')
 			//$(this.el).html('<td>Title  <input type=\"text\" id=\"title\" value="'+ this.model.get('title') +'"><br>Category <input type=\"hidden\" id=\"category\"></input></td><td><p>Description:</p><textarea id=\"description\"></textarea></td><td style="position: relative;"><p>Visability:</p><div id="visability" class="btn-group" data-toggle="buttons-radio"><button class="btn">Public</button><button class="btn">Private</button></div><button id=\"queue\" style="position: absolute; right: 10px; bottom: 10px;" class=\"btn btn-success btn-large\">Queue</button></td>');
 			//$(this.el).html('<td><h4>'+ this.model.get('title') +'</h4><form class="form-horizontal><div class="control-group"><label class="control-label">')
@@ -260,73 +260,22 @@
 			//TODO: Type checking before upload
 
 			// Static definitions for common elements because I can't pass this to the socket functions
-			var el = this.el;
 			var model = this.model;
 			var collection = this.collection;
 
-			// Initialize a new socket with the node app.
-			// Force new connection required to support asynchronous connections in the future
-			var socket = io.connect('http://kenai.asap.um.maine.edu:8080', {'force new connection': true});
+			uploadFile(this.model.get('file'));
 
-			// Static definitions before I added the definitions at the top (Rework)
-			var fileName = this.model.get('unique_id');
-			var fileSize = this.model.get('size');
-			var fileID = this.model.get('id');
-
-			// Initialize the HTML5 File Reader
-			FReader = new FileReader();
-
-			// Initialize the connection to the node app (ToDo: Explain Better)
-			FReader.onload = function(event){
-
-				socket.emit('Upload', {'Name' : fileName, Data: event.target.result });
-				event.target.result = null;
+			function progress(evt) {
+				var newProgress = (evt.loaded/model.get('size'))*100;
+				model.set({progress: newProgress})
 			}
-			socket.emit('Start', {'Name': fileName, 'Size': fileSize, 'id': fileID });
 
-			// Once again, static definition I should rework
-			var SelectedFile = this.model.get('file');
-
-			var NewFile; //The Variable that will hold the new Block of Data
-
-			// After the upload is started above, the node app with send a request for more data.  That request is handled here.
-			socket.on('MoreData', function (data){
-
-				var update = {
-					progress: data['Percent'],
-				}
-
-				model.set(update);
-
-
-				// ToDo: Experiment with larger chunk sizes
-				
-				var Place = data['Place'] * 524288; //The Next Blocks Starting Position
-				
-				
-				// Webkit/Firefox Specific upload commands...
-				if(SelectedFile.webkitSlice) 
-					NewFile = SelectedFile.slice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
-				else
-					NewFile = SelectedFile.mozSlice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
-				FReader.readAsBinaryString(NewFile);
-			});
-
-
-
-			// Eventually the upload will finish.
-
-			socket.on('Done', function (data) {
-
-				socket.disconnect();
-
+			function complete(evt) {
 				var update = {
 					progress: '100',
-					status: '3',
+					status: '3'
 				}
 				model.set(update);
-
-
 
 				// Emulate a queue by uploading the next file with a status of 1 (queued).
 				// Also, change that model's status to 2 so it gets uploaded.
@@ -338,27 +287,32 @@
 					status: '2'
 				}
 				nextUpload[0].set(changeStatus);
-				// So instead we set its status to 2, triggering the on change event defined earlier in the View.
-			});
+				// So instead we set its status to 2, triggering the on change event defined earlier in the
+			}
 
-			socket.on('Error', function (data){
-				socket.disconnect();
+			function uploadFile(myFileObject) {
+				// Open Our formData Object
+				var formData = new FormData();
+			 
+				// Append our file to the formData object
+				// Notice the first argument "file" and keep it in mind
+				formData.append('file', myFileObject);
+				formData.append('id', model.get('id'));
+				formData.append('unique_id', model.get('unique_id'));
+			 
+				// Create our XMLHttpRequest Object
+				var xhr = new XMLHttpRequest();
 
-				var update = {
-					progress: '0',
-					status: '4',
-				}
-				model.set(update);
-
-				var nextUpload = collection.where({status: "1"});
-				// This returns a model, not a view, meaning we can't directly call upload on it.
-
-				var changeStatus = {
-					status: '2'
-				}
-				nextUpload[0].set(changeStatus);
-				// So instead we set its status to 2, triggering the on change event defined earlier in the View.
-			});
+			 	var uuid = "";
+     				for (i = 0; i < 32; i++) { uuid += Math.floor(Math.random() * 16).toString(16); }
+				// Open our connection using the POST method
+				xhr.upload.addEventListener('progress', progress, false);
+				xhr.upload.addEventListener('load', complete, false);
+				xhr.open("POST", '/upload_test/');
+			 
+				// Send the file
+				xhr.send(formData);
+			}
 		}	
 	});
 

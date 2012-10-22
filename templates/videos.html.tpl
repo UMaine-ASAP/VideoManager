@@ -187,7 +187,7 @@ $(document).ready( function() {
 								{% endif %}
 							{% if video.owner_id == flash['userData']['user_id'] %}
 							<a style="position: absolute; top: 7px; right: 34px;" href="{{ flash['web_root'] }}/edit/meta/{{ video.id }}" class="btn">Edit</a>
-<button style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">x</button>
+<a href="{{flash['web_root']}}/edit/remove/{{ video.id }}" style="position: absolute; top: 10px; right: 8px;" id="remove" class="close">x</a>
 							{% endif %}
 						</header>
 							<div class='group video_thumbnail'>

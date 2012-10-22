@@ -9,6 +9,7 @@
 		<link href="{{flash['web_root']}}/libraries/marceltv.css" rel="stylesheet">
 		<link href="{{flash['web_root']}}/libraries/select2/select2.css" rel="stylesheet">
 		<script src="{{flash['web_root']}}/libraries/select2/select2.js" rel="stylesheet"></script>
+		<script src="{{flash['web_root']}}/libraries/jquery.uploadProgress.js"></script>
 		 <script src="http://kenai.asap.um.maine.edu:8080/socket.io/socket.io.js"></script>
 
 		<style type="text/css">

@@ -35,13 +35,13 @@ class VideoController
 		// Return videos from a specific category
 	    if( $category_id != -1) {
 	    	$data 		= array("category_id" => $category_id);
-		   	$statement  = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id";
+		   	$statement  = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id  FROM VIDEO_Upload_data as videos, VIDEO_Category_map as VCmap, AUTH_Users as users WHERE VCmap.category_id = :category_id AND VCmap.video_id = videos.video_id AND videos.owner_id = users.user_id AND deleted = 0";
 
 		   	$videos = Database::query($statement, $data);
 
 	    } else { // Get all videos
 
-		   	$statement = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id";
+		   	$statement = "SELECT videos.video_id as id, videos.unique_id as thumbnail, videos.title as title, videos.description as description, videos.duration as duration, videos.visibility as visibility, videos.upload_date as upload_date, users.username as owner, users.user_id as owner_id FROM VIDEO_Upload_data as videos, AUTH_Users as users WHERE videos.owner_id = users.user_id AND deleted = 0";
 
 		   	$videos = Database::query($statement);
 	    } 
@@ -100,7 +100,7 @@ class VideoController
 	        	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	        	$data = array("user_id" => $user_id);
 
-	        	$statement = $dbh->prepare("SELECT title, upload_date, video_id, owner_id FROM VIDEO_Upload_data WHERE owner_id = :user_id ORDER BY video_id DESC");
+	        	$statement = $dbh->prepare("SELECT title, upload_date, video_id, owner_id FROM VIDEO_Upload_data WHERE owner_id = :user_id AND deleted = 0 ORDER BY video_id DESC");
 	        	$statement->execute($data);
 
 	        	$row = $statement->fetchAll();
@@ -184,7 +184,12 @@ class VideoController
 		}
 	}
 
-	static function deleteVideo($video_id) {
+	static function removeVideo($video_id) {
+		if(!is_null($video_id))
+		{
+			$data = array('video_id' => $video_id);
+			Database::query("UPDATE VIDEO_Upload_data SET deleted = 1 WHERE video_id = :video_id", $data);
+		}
 
 	}
 
